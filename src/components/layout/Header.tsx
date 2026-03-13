@@ -4,12 +4,11 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { User, LogOut, ChevronDown } from "lucide-react";
+import { LogOut, ChevronDown } from "lucide-react";
 
 export default function Header() {
     const { data: session, status } = useSession();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 w-full glass border-b border-white/5 transition-all duration-300">
@@ -23,54 +22,16 @@ export default function Header() {
                     <Link href="/events" className="text-sm font-medium text-slate-400 transition-colors hover:text-white">Events</Link>
                     {session && (
                         <>
-                            <Link href="/dashboard" className="text-sm font-medium text-slate-400 transition-colors hover:text-white">Dashboard</Link>
-                            <Link href="/my-tickets" className="text-sm font-medium text-slate-400 transition-colors hover:text-white">My Tickets</Link>
+                            <Link href={session.user?.role === 'admin' ? '/admin' : '/user'} className="text-sm font-medium text-slate-400 transition-colors hover:text-white">Dashboard</Link>
+                            <Link href="/user/my-tickets" className="text-sm font-medium text-slate-400 transition-colors hover:text-white">My Tickets</Link>
                         </>
                     )}
                 </nav>
 
                 <div className="flex items-center gap-4">
-                    {status === "authenticated" ? (
-                        <div className="relative">
-                            <button
-                                onClick={() => setIsProfileOpen(!isProfileOpen)}
-                                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-white/5 hover:bg-white/10 transition-all border border-white/10"
-                            >
-                                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-[10px]">
-                                    {session.user?.name?.charAt(0) || "U"}
-                                </div>
-                                <span className="hidden sm:inline">{session.user?.name}</span>
-                                <ChevronDown className={`w-4 h-4 transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
-                            </button>
-
-                            {isProfileOpen && (
-                                <div className="absolute right-0 mt-2 w-48 glass border border-white/10 rounded-2xl shadow-2xl py-2 animate-in fade-in slide-in-from-top-2">
-                                    <div className="px-4 py-2 border-b border-white/5 mb-2">
-                                        <p className="text-xs text-slate-400 truncate">{session.user?.email}</p>
-                                    </div>
-                                    <Link
-                                        href="/auth/change-password"
-                                        className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
-                                        onClick={() => setIsProfileOpen(false)}
-                                    >
-                                        <Lock className="w-4 h-4" />
-                                        Change Password
-                                    </Link>
-                                    <button
-                                        onClick={() => signOut({ callbackUrl: "/" })}
-                                        className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-colors"
-                                    >
-                                        <LogOut className="w-4 h-4" />
-                                        Sign out
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        <Link href="/auth/login" className="hidden sm:block px-5 py-2 rounded-full text-sm font-semibold bg-white text-black hover:bg-slate-200 transition-all active:scale-95">
-                            Sign in
-                        </Link>
-                    )}
+                    <Link href="/auth/login" className="sm:block px-5 py-2 rounded-full text-sm font-semibold bg-white text-black hover:bg-slate-200 transition-all active:scale-95">
+                        Sign in
+                    </Link>
 
                     <button
                         type="button"
@@ -92,7 +53,7 @@ export default function Header() {
             {/* Mobile Nav Overlay */}
             <div className={`md:hidden absolute top-full left-0 right-0 glass border-b border-white/5 transition-all duration-500 overflow-hidden ${isMenuOpen ? 'max-h-[85vh] opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
                 <nav className="flex flex-col p-6 gap-2 overflow-y-auto">
-                    {['Events', 'Account', 'Admin'].map((item) => (
+                    {['Events', 'Account'].map((item) => (
                         <Link
                             key={item}
                             href={`/${item.toLowerCase()}`}

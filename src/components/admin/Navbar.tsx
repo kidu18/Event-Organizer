@@ -1,11 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Search, Bell, MessageSquare, ChevronDown } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 export default function Navbar() {
     const { data: session } = useSession();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return <header className="h-20 border-b border-white/5 bg-[#0f172a]/80 backdrop-blur-xl sticky top-0 z-40" />;
+    }
 
     return (
         <header className="h-20 border-b border-white/5 bg-[#0f172a]/80 backdrop-blur-xl flex items-center justify-between px-8 sticky top-0 z-40">
@@ -35,8 +44,10 @@ export default function Navbar() {
 
                 <div className="flex items-center gap-4 group cursor-pointer pl-2">
                     <div className="text-right">
-                        <div className="text-sm font-bold text-white leading-tight">{session?.user?.name || "Alex Rivers"}</div>
-                        <div className="text-[10px] font-medium text-slate-500 uppercase tracking-tighter">System Admin</div>
+                        <div className="text-sm font-bold text-white leading-tight">{session?.user?.name || "User"}</div>
+                        <div className="text-[10px] font-medium text-slate-500 uppercase tracking-tighter">
+                            {session?.user?.role === "admin" ? "System Admin" : "Member"}
+                        </div>
                     </div>
                     <div className="relative">
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 border-2 border-white/10 overflow-hidden shadow-lg shadow-indigo-500/10 transition-all group-hover:scale-105 group-hover:border-indigo-400/50">

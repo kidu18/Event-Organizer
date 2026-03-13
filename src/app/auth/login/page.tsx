@@ -48,7 +48,16 @@ export default function LoginPage() {
             if (result?.error) {
                 setError("Invalid email or password. Please try again.");
             } else {
-                router.push(callbackUrl);
+                // CONCEPT: Dynamic Redirection. A senior dev ensures the user 
+                // lands in the right "context" immediately.
+                const session = await getSession();
+
+                // If the user was trying to go to the old /dashboard or has no specific destination:
+                const targetUrl = (callbackUrl === "/dashboard" || !callbackUrl)
+                    ? (session?.user?.role === "admin" ? "/admin" : "/user")
+                    : callbackUrl;
+
+                router.push(targetUrl);
                 router.refresh();
             }
         } catch (err) {
@@ -65,11 +74,11 @@ export default function LoginPage() {
                     <div className="inline-flex items-center justify-center p-3 bg-indigo-600 rounded-xl shadow-lg mb-4">
                         <LogIn className="w-8 h-8 text-white" />
                     </div>
-                    <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-                        Welcome Back
+                    <h2 className="text-3xl font-extrabold text-black tracking-tight">
+                        Attendee Sign In
                     </h2>
                     <p className="mt-2 text-sm text-gray-600">
-                        Sign in to manage your events and tickets
+                        Access your tickets and discover exclusive events
                     </p>
                 </div>
 
@@ -93,9 +102,9 @@ export default function LoginPage() {
                                 <input
                                     {...register("email")}
                                     type="email"
-                                    className={`block w-full pl-10 pr-3 py-2 border ${errors.email ? "border-red-300 ring-red-100" : "border-gray-300 ring-indigo-50"
+                                    className={`block w-full text-black pl-10 pr-3 py-2 border ${errors.email ? "border-red-300 ring-red-100" : "border-gray-300 ring-indigo-50"
                                         } rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all`}
-                                    placeholder="admin@example.com"
+                                    placeholder="your@email.com"
                                 />
                             </div>
                             {errors.email && (
@@ -122,7 +131,7 @@ export default function LoginPage() {
                                 <input
                                     {...register("password")}
                                     type="password"
-                                    className={`block w-full pl-10 pr-3 py-2 border ${errors.password ? "border-red-300 ring-red-100" : "border-gray-300 ring-indigo-50"
+                                    className={`block w-full pl-10 pr-3 text-black py-2 border ${errors.password ? "border-red-300 ring-red-100" : "border-gray-300 ring-indigo-50"
                                         } rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all`}
                                     placeholder="••••••••"
                                 />
@@ -149,7 +158,7 @@ export default function LoginPage() {
                 </form>
 
                 <div className="text-center mt-6">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-black">
                         Don't have an account?{" "}
                         <Link
                             href="/auth/register"

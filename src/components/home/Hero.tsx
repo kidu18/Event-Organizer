@@ -4,6 +4,14 @@ import React from "react";
 import DateSelect from "../ui/DateSelect";
 
 export default function Hero() {
+    const [mounted, setMounted] = React.useState(false);
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) return <section className="min-h-[85vh] bg-[#020617]" />;
+
     return (
         <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 px-4 sm:px-6 overflow-hidden min-h-[85vh] md:min-h-[90vh] flex items-center">
             <div className="w-full max-w-7xl mx-auto relative z-10">
@@ -27,6 +35,7 @@ export default function Hero() {
                                     <path d="m21 21-4.3-4.3" />
                                 </svg>
                                 <input
+                                    suppressHydrationWarning
                                     aria-label="Search events"
                                     placeholder="Concerts, tech, or festivals..."
                                     className="flex-1 py-3.5 md:py-4 bg-transparent text-white placeholder:text-slate-500 border-none focus:ring-0 text-sm md:text-base w-full"

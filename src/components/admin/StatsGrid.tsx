@@ -2,43 +2,49 @@
 
 import React from "react";
 import { DollarSign, Ticket, Calendar, Users, ArrowUpRight } from "lucide-react";
-
-const stats = [
-    {
-        name: "Total Revenue",
-        value: "$128,430.00",
-        change: "+12.5%",
-        icon: DollarSign,
-        color: "from-emerald-500/20 to-emerald-500/0",
-        iconColor: "text-emerald-500",
-    },
-    {
-        name: "Tickets Sold",
-        value: "12,450",
-        change: "+8.2%",
-        icon: Ticket,
-        color: "from-blue-500/20 to-blue-500/0",
-        iconColor: "text-blue-500",
-    },
-    {
-        name: "Active Events",
-        value: "48",
-        change: "+4.1%",
-        icon: Calendar,
-        color: "from-amber-500/20 to-amber-500/0",
-        iconColor: "text-amber-500",
-    },
-    {
-        name: "Total Users",
-        value: "8,922",
-        change: "+15.3%",
-        icon: Users,
-        color: "from-indigo-500/20 to-indigo-500/0",
-        iconColor: "text-indigo-500",
-    },
-];
+import { users, events, bookings } from "@/lib/db";
 
 export default function StatsGrid() {
+    const totalRevenue = bookings.reduce((sum, b) => sum + b.price, 0);
+    const ticketsSold = events.reduce((sum, e) => sum + e.currentBookings, 0);
+    const activeEvents = events.length;
+    const totalUsersCount = users.length;
+
+    const stats = [
+        {
+            name: "Total Revenue",
+            value: `$${totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+            change: "+12.5%",
+            icon: DollarSign,
+            color: "from-emerald-500/20 to-emerald-500/0",
+            iconColor: "text-emerald-500",
+        },
+        {
+            name: "Tickets Sold",
+            value: ticketsSold.toLocaleString(),
+            change: "+8.2%",
+            icon: Ticket,
+            color: "from-blue-500/20 to-blue-500/0",
+            iconColor: "text-blue-500",
+        },
+        {
+            name: "Active Events",
+            value: activeEvents.toString(),
+            change: "+4.1%",
+            icon: Calendar,
+            color: "from-amber-500/20 to-amber-500/0",
+            iconColor: "text-amber-500",
+        },
+        {
+            name: "Total Users",
+            value: totalUsersCount.toLocaleString(),
+            change: "+15.3%",
+            icon: Users,
+            color: "from-indigo-500/20 to-indigo-500/0",
+            iconColor: "text-indigo-500",
+        },
+    ];
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {stats.map((stat) => (

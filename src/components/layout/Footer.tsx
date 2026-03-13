@@ -69,10 +69,14 @@ export default function Footer() {
                         <p className="text-slate-500 text-sm mb-6 font-medium leading-relaxed">Get the latest on the world&apos;s most exclusive events.</p>
                         <div className="flex flex-col sm:flex-row gap-2">
                             <input
+                                suppressHydrationWarning
                                 placeholder="Email address"
                                 className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-purple-500/50 transition-colors"
                             />
-                            <button className="px-6 py-3 rounded-xl bg-white text-black text-sm font-bold hover:bg-slate-200 transition-all active:scale-95">
+                            <button
+                                suppressHydrationWarning
+                                className="px-6 py-3 rounded-xl bg-white text-black text-sm font-bold hover:bg-slate-200 transition-all active:scale-95"
+                            >
                                 Join
                             </button>
                         </div>
