@@ -79,7 +79,6 @@ export const eventsService = {
         }
     },
 
-    // Delete event
     async delete(id: string): Promise<boolean> {
         try {
             const response = await fetch(`/api/events/${id}`, {
