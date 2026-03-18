@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { User, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2, CheckCircle } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, AlertCircle, Loader2, CheckCircle } from "lucide-react";
 import Link from "next/link";
-import { login } from "@/services/authServices";
+import { useAuth } from "@/hooks/useAuth";
 
 // Enhanced validation schema for user registration
 const userRegistrationSchema = z.object({
@@ -31,19 +31,20 @@ const userRegistrationSchema = z.object({
         .regex(/^[+]?[\d\s-()]+$/, "Please enter a valid phone number")
         .optional(),
     agreeToTerms: z.boolean().refine(val => val === true, "You must agree to the terms and conditions"),
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
 });
 
 type UserRegistrationValues = z.infer<typeof userRegistrationSchema>;
 
 export default function UserRegistrationPage() {
-    const router = useRouter();
-    const [error, setError] = useState<string | null>(null);
+    const { register: registerUser, isLoading, error: authError } = useAuth();
     const [success, setSuccess] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [currentStep, setCurrentStep] = useState(1);
-    const [registrationData, setRegistrationData] = useState<UserRegistrationValues | null>(null);
+    const router = useRouter();
 
     const {
         register,
@@ -58,7 +59,21 @@ export default function UserRegistrationPage() {
 
     const watchedPassword = watch("password");
     const watchedConfirmPassword = watch("confirmPassword");
-    const watchedEmail = watch("email");
+
+    const onSubmit = async (data: UserRegistrationValues) => {
+        setSuccess(null);
+
+        const result = await registerUser({
+            email: data.email,
+            password: data.password,
+            firstName: data.firstName,
+            lastName: data.lastName
+        });
+
+        if (result.success) {
+            setSuccess('Account created successfully! Redirecting to login...');
+        }
+    };
 
     // Step 1: Basic Information
     const renderStep1 = () => (
@@ -384,39 +399,6 @@ export default function UserRegistrationPage() {
         </div>
     );
 
-    const onSubmit = async (data: UserRegistrationValues) => {
-        setIsLoading(true);
-        setError(null);
-        setSuccess(null);
-
-        try {
-            console.log('🔴 User registration attempt:', { 
-                email: data.email, 
-                firstName: data.firstName,
-                lastName: data.lastName 
-            });
-
-            // For now, we'll simulate a successful registration
-            // In production, this would call your backend API
-            await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
-            
-            console.log('✅ User registration successful');
-            
-            setSuccess('Account created successfully! Redirecting to login...');
-            
-            // Redirect to login after successful registration
-            setTimeout(() => {
-                router.push('/login?message=registration-success');
-            }, 2000);
-            
-        } catch (err) {
-            console.error('❌ User registration failed:', err);
-            setError(err instanceof Error ? err.message : "Registration failed");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center px-4 py-12">
             <div className="max-w-md w-full space-y-8">
@@ -437,11 +419,11 @@ export default function UserRegistrationPage() {
                 </div>
 
                 {/* Error Message */}
-                {error && (
+                {authError && (
                     <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
                         <div className="flex items-center">
                             <AlertCircle className="w-5 h-5 mr-2" />
-                            <span>{error}</span>
+                            <span>{authError}</span>
                         </div>
                     </div>
                 )}

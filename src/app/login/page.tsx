@@ -1,46 +1,17 @@
 "use client"
 
-import { login } from "@/services/authServices"
+import { useAuth } from "@/hooks/useAuth"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-    const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState("")
-    const router = useRouter()
+    const { login, isLoading, error } = useAuth()
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        setIsLoading(true)
-        setError("")
-        
-        try {
-            const response = await login(email, password)
-            
-            console.log('✅ Login successful:', response)
-            
-            // Store tokens in localStorage
-            localStorage.setItem('accessToken', response.accessToken)
-            localStorage.setItem('refreshToken', response.refreshToken)
-            localStorage.setItem('user', JSON.stringify(response.user))
-            
-            // Redirect based on user role
-            if (response.user.role === 'ADMIN') {
-                console.log('🔴 Redirecting to admin dashboard')
-                router.push('/admin')
-            } else {
-                console.log('🔵 Redirecting to user dashboard')
-                router.push('/dashboard')
-            }
-            
-        } catch (error) {
-            console.error('❌ Login failed:', error)
-            setError(error instanceof Error ? error.message : "Login failed")
-        } finally {
-            setIsLoading(false)
-        }
+        await login(email, password)
     }
     
     return (
