@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Shield, Users, Calendar, Settings, LogOut, TrendingUp, Activity, DollarSign, Eye, Edit, Trash2, Plus, Search, Filter, Download, Bell, UserCheck, Clock, CheckCircle, XCircle, AlertTriangle, User } from "lucide-react";
+import { Shield, Users, Calendar, Settings, LogOut, TrendingUp, Activity, DollarSign, Eye, Edit, Trash2, Plus, Search, Filter, Download, Bell, UserCheck, Clock, CheckCircle, XCircle, AlertTriangle, User as UserIcon } from "lucide-react";
 import { getSession, isAdmin, logout } from "@/lib/custom-auth";
 import type { User } from "@/lib/custom-auth";
 
@@ -181,7 +181,7 @@ export default function AdminDashboardPage() {
                                     Welcome, <span className="font-medium">{adminData?.firstName || adminData?.name || 'Admin'}</span>
                                 </span>
                                 <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full flex items-center justify-center">
-                                    <User className="w-4 h-4 text-white" />
+                                    <UserIcon className="w-4 h-4 text-white" />
                                 </div>
                                 <button
                                     onClick={handleLogout}
@@ -317,7 +317,7 @@ export default function AdminDashboardPage() {
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="flex items-center">
                                                         <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-3">
-                                                            <User className="w-4 h-4 text-gray-600" />
+                                                            <UserIcon className="w-4 h-4 text-gray-600" />
                                                         </div>
                                                         <div>
                                                             <div className="text-sm font-medium text-gray-900">{user.name}</div>
