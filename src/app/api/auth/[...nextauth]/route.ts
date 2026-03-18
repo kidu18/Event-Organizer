@@ -1,7 +1,19 @@
-/** CONCEPT: The API Entry Point. This dynamically handles all authentication requests (GET/POST) like /api/auth/signin and /api/auth/session. */
-import NextAuth from "next-auth";
-import { authOptions } from "@/lib/auth";
+/** CONCEPT: Disabled NextAuth - Using custom backend authentication */
+// This route is disabled since we're using custom backend authentication
+// All auth requests are now handled by custom routes in /api/auth/
 
-const handler = NextAuth(authOptions);
+import { NextResponse } from "next/server";
 
-export { handler as GET, handler as POST };
+export async function GET() {
+    return NextResponse.json(
+        { message: "NextAuth disabled. Using custom authentication." },
+        { status: 410 }
+    );
+}
+
+export async function POST() {
+    return NextResponse.json(
+        { message: "NextAuth disabled. Using custom authentication." },
+        { status: 410 }
+    );
+}
