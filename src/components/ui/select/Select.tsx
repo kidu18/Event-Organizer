@@ -61,10 +61,10 @@ export default function Select({ options, value, onChange, className = "", place
 				aria-expanded={open}
 				onClick={() => setOpen((s) => !s)}
 				onKeyDown={onKeyDown}
-				className="w-full p-3 rounded border flex items-center justify-between bg-transparent text-[var(--color-foreground)]"
+				className="w-full p-3 rounded border flex items-center justify-between bg-transparent text-black"
 			>
 				<span className="truncate">{selected || placeholder || "Select"}</span>
-				<span className="ml-3 text-sm text-[var(--color-text-secondary)]">▾</span>
+				<span className="ml-3 text-sm text-black">▾</span>
 			</button>
 
 			{open && (
@@ -72,7 +72,7 @@ export default function Select({ options, value, onChange, className = "", place
 					ref={listRef}
 					role="listbox"
 					tabIndex={-1}
-					className="absolute z-20 mt-1 w-full bg-[var(--color-surface)] text-[var(--color-foreground)] rounded shadow-md max-h-48 overflow-auto"
+					className="absolute z-20 mt-1 w-full bg-[var(--color-surface)] text-black rounded shadow-md max-h-48 overflow-auto"
 				>
 					{options.map((opt, idx) => (
 						<li
