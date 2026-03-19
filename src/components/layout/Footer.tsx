@@ -71,7 +71,7 @@ export default function Footer() {
                             <input
                                 suppressHydrationWarning
                                 placeholder="Email address"
-                                className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-purple-500/50 transition-colors"
+                                className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-black text-sm focus:outline-none focus:border-purple-500/50 transition-colors"
                             />
                             <button
                                 suppressHydrationWarning

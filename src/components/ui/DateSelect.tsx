@@ -37,7 +37,7 @@ export default function DateSelect({ value, onChange, className = "", placeholde
                 type="button"
                 onClick={openPicker}
                 aria-label={placeholder}
-                className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-full bg-[rgba(255,255,255,0.03)] text-white hover:bg-[rgba(255,255,255,0.06)] w-full transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-full bg-[rgba(255,255,255,0.03)] text-black hover:bg-[rgba(255,255,255,0.06)] w-full transition-colors"
             >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M7 10h10M7 14h10M17 3v2M7 3v2M21 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V7h18z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />

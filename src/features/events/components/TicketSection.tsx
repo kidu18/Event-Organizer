@@ -23,7 +23,7 @@ export default function TicketSection({ register, errors, watch }: Props) {
                     <span className="text-sm font-medium text-gray-300 mb-1 block">Ticket Type</span>
                     <select
                         {...register("ticketing.type")}
-                        className={`bg-[#0f172a] border ${errors.ticketing?.type ? 'border-red-500' : 'border-slate-700'} rounded-lg p-3 w-full text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
+                        className={`bg-[#0f172a] border ${errors.ticketing?.type ? 'border-red-500' : 'border-slate-700'} rounded-lg p-3 w-full text-black focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
                     >
                         <option value="Free">Free</option>
                         <option value="Paid">Paid</option>

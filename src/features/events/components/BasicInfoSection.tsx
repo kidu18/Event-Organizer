@@ -28,7 +28,7 @@ export default function BasicInfoSection({ register, errors }: Props) {
                     <span className="text-sm font-medium text-gray-300 mb-1 block">Category</span>
                     <select
                         {...register("category")}
-                        className={`bg-[#0f172a] border ${errors.category ? 'border-red-500' : 'border-slate-700'} rounded-lg p-3 w-full text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
+                        className={`bg-[#0f172a] border ${errors.category ? 'border-red-500' : 'border-slate-700'} rounded-lg p-3 w-full text-black focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
                     >
                         <option value="">Select Category</option>
                         <option value="Technology">Technology</option>
