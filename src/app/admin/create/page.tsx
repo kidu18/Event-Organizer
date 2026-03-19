@@ -33,11 +33,55 @@ export default function CreateEventPage() {
         e.preventDefault();
         setIsLoading(true);
         
-        // Mocking the creation process
-        setTimeout(() => {
-            setIsLoading(false);
+        try {
+            // Get the auth token from localStorage
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
+            // Prepare the event data according to the backend API schema
+            const eventData = {
+                title: formData.title,
+                description: formData.description,
+                date: new Date(formData.date).toISOString(),
+                location: formData.location,
+                capacity: parseInt(formData.totalCapacity),
+                registeredCount: 0,
+                basePrice: parseFloat(formData.price),
+                isActive: true,
+                imageUrl: "https://example.com/event-image.jpg", // Default image
+                googleMapsUrl: `https://maps.google.com/?q=${encodeURIComponent(formData.location)}`
+            };
+
+            console.log('🚀 Creating event with data:', eventData);
+
+            // Call the backend API
+            const response = await fetch('https://event-ticket-production.up.railway.app/api/events', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(eventData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `Failed to create event: ${response.status}`);
+            }
+
+            const createdEvent = await response.json();
+            console.log('✅ Event created successfully:', createdEvent);
+
+            // Redirect to events page
             router.push("/admin/events");
-        }, 1500);
+        } catch (error) {
+            console.error('❌ Error creating event:', error);
+            alert(`Failed to create event: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const inputClasses = "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-black placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all";

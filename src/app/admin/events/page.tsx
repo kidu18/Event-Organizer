@@ -3,9 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Plus, Calendar, MapPin, Users, Ticket, Edit2, Trash2, Eye, Search, Filter, MoreVertical, Clock, DollarSign, AlertCircle } from "lucide-react";
+import { Plus, Calendar, MapPin, Users, Ticket, Edit2, Trash2, Eye, Search, Filter, MoreVertical, Clock, DollarSign, AlertCircle, X } from "lucide-react";
 import { Event, CreateEventRequest, UpdateEventRequest } from "@/types/event";
 import { getAllEvents, createEvent, updateEvent, deleteEvent, searchEvents } from "@/services/eventServices";
+import CreateEventForm from "@/features/events/components/CreateEventForm";
 
 export default function EventsManagementPage() {
     const router = useRouter();
@@ -15,18 +16,6 @@ export default function EventsManagementPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [editingEvent, setEditingEvent] = useState<Event | null>(null);
-    const [formData, setFormData] = useState<CreateEventRequest>({
-        title: '',
-        description: '',
-        date: '',
-        location: '',
-        capacity: 100,
-        registeredCount: 0,
-        basePrice: 0,
-        isActive: true,
-        imageUrl: '',
-        googleMapsUrl: ''
-    });
 
     useEffect(() => {
         fetchEvents();
@@ -60,38 +49,8 @@ export default function EventsManagementPage() {
         }
     };
 
-    const handleCreateEvent = async () => {
-        try {
-            setLoading(true);
-            const newEvent = await createEvent(formData);
-            console.log('✅ Event created:', newEvent.title);
-            setShowCreateModal(false);
-            resetForm();
-            fetchEvents();
-        } catch (error) {
-            console.error('❌ Failed to create event:', error);
-            setError(error instanceof Error ? error.message : 'Failed to create event');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleUpdateEvent = async () => {
-        if (!editingEvent) return;
-        
-        try {
-            setLoading(true);
-            const updatedEvent = await updateEvent(editingEvent.id, formData as UpdateEventRequest);
-            console.log('✅ Event updated:', updatedEvent.title);
-            setEditingEvent(null);
-            resetForm();
-            fetchEvents();
-        } catch (error) {
-            console.error('❌ Failed to update event:', error);
-            setError(error instanceof Error ? error.message : 'Failed to update event');
-        } finally {
-            setLoading(false);
-        }
+    const closeModal = () => {
+        setShowCreateModal(false);
     };
 
     const handleDeleteEvent = async (eventId: string) => {
@@ -110,37 +69,6 @@ export default function EventsManagementPage() {
         } finally {
             setLoading(false);
         }
-    };
-
-    const resetForm = () => {
-        setFormData({
-            title: '',
-            description: '',
-            date: '',
-            location: '',
-            capacity: 100,
-            registeredCount: 0,
-            basePrice: 0,
-            isActive: true,
-            imageUrl: '',
-            googleMapsUrl: ''
-        });
-    };
-
-    const openEditModal = (event: Event) => {
-        setEditingEvent(event);
-        setFormData({
-            title: event.title,
-            description: event.description,
-            date: event.eventDate,
-            location: event.venueName,
-            capacity: event.totalRows * event.totalColumns,
-            registeredCount: event.soldSeatsCount,
-            basePrice: event.seats[0]?.price || 0,
-            isActive: true,
-            imageUrl: event.imageUrl,
-            googleMapsUrl: event.googleMapsUrl
-        });
     };
 
     const formatDate = (dateString: string) => {
@@ -333,10 +261,7 @@ export default function EventsManagementPage() {
                                                     <button className="text-purple-600 hover:text-purple-900">
                                                         <Eye className="w-4 h-4" />
                                                     </button>
-                                                    <button 
-                                                        onClick={() => openEditModal(event)}
-                                                        className="text-blue-600 hover:text-blue-900"
-                                                    >
+                                                    <button className="text-gray-400 hover:text-gray-600" title="Edit functionality coming soon">
                                                         <Edit2 className="w-4 h-4" />
                                                     </button>
                                                     <button 
@@ -357,124 +282,30 @@ export default function EventsManagementPage() {
             </div>
 
             {/* Create/Edit Modal */}
-            {(showCreateModal || editingEvent) && (
+            {showCreateModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
-                        <h2 className="text-xl font-bold mb-4">
-                            {editingEvent ? 'Edit Event' : 'Create New Event'}
-                        </h2>
-                        
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Event Title</label>
-                                <input
-                                    type="text"
-                                    value={formData.title}
-                                    onChange={(e) => setFormData({...formData, title: e.target.value})}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                    required
-                                />
-                            </div>
-                            
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                                <textarea
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({...formData, description: e.target.value})}
-                                    rows={3}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                    required
-                                />
-                            </div>
-                            
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Date & Time</label>
-                                    <input
-                                        type="datetime-local"
-                                        value={formData.date}
-                                        onChange={(e) => setFormData({...formData, date: e.target.value})}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                        required
-                                    />
-                                </div>
-                                
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                                    <input
-                                        type="text"
-                                        value={formData.location}
-                                        onChange={(e) => setFormData({...formData, location: e.target.value})}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                        required
-                                    />
-                                </div>
-                            </div>
-                            
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Capacity</label>
-                                    <input
-                                        type="number"
-                                        value={formData.capacity}
-                                        onChange={(e) => setFormData({...formData, capacity: parseInt(e.target.value)})}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                        required
-                                    />
-                                </div>
-                                
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Base Price</label>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        value={formData.basePrice}
-                                        onChange={(e) => setFormData({...formData, basePrice: parseFloat(e.target.value)})}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                        required
-                                    />
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                                <input
-                                    type="url"
-                                    value={formData.imageUrl}
-                                    onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                />
-                            </div>
-                            
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Google Maps URL</label>
-                                <input
-                                    type="url"
-                                    value={formData.googleMapsUrl}
-                                    onChange={(e) => setFormData({...formData, googleMapsUrl: e.target.value})}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                />
-                            </div>
+                    <div className="bg-[#0f172a] border border-white/10 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden shadow-2xl">
+                        {/* Modal Header */}
+                        <div className="bg-[#0f172a] border-b border-white/10 px-6 py-4 flex items-center justify-between">
+                            <h2 className="text-xl font-bold text-white">Create New Event</h2>
+                            <button
+                                onClick={closeModal}
+                                className="p-2 hover:bg-white/10 rounded-lg transition-colors text-white"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
                         </div>
                         
-                        <div className="flex justify-end space-x-3 mt-6">
-                            <button
-                                onClick={() => {
-                                    setShowCreateModal(false);
-                                    setEditingEvent(null);
-                                    resetForm();
-                                }}
-                                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={editingEvent ? handleUpdateEvent : handleCreateEvent}
-                                disabled={loading}
-                                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
-                            >
-                                {loading ? 'Saving...' : (editingEvent ? 'Update Event' : 'Create Event')}
-                            </button>
+                        {/* Modal Body - Scrollable */}
+                        <div className="overflow-y-auto max-h-[calc(90vh-80px)]">
+                            <div className="p-6">
+                                <CreateEventForm 
+                                    onEventCreated={() => {
+                                        fetchEvents(); // Refresh the events list
+                                    }}
+                                    onClose={closeModal}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

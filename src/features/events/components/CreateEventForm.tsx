@@ -3,6 +3,8 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { createEvent } from "@/services/eventServices";
 import { eventSchema, EventFormValues } from "../schemas/event-schema";
 import BasicInfoSection from "./BasicInfoSection";
 import DateTimeSection from "./DateTimeSection";
@@ -12,7 +14,13 @@ import ImageUploadSection from "./ImageUploadSection";
 import { Save, Send, X } from "lucide-react";
 import Button from "@/components/ui/Button";
 
-export default function CreateEventForm() {
+interface EventFormProps {
+  onEventCreated?: () => void;
+  onClose?: () => void;
+}
+
+export default function CreateEventForm({ onEventCreated, onClose }: EventFormProps = {}) {
+    const router = useRouter();
     const form = useForm<EventFormValues>({
         resolver: zodResolver(eventSchema),
         defaultValues: {
@@ -43,17 +51,65 @@ export default function CreateEventForm() {
     const { register, control, handleSubmit, formState: { errors, isSubmitting }, watch, setValue } = form;
 
     const onSaveDraft = async (data: EventFormValues) => {
-        console.log("Saving Draft:", { ...data, status: "Draft" });
-        // Simulate API call to NestJS
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        alert("Draft saved successfully!");
+        try {
+            console.log("🚀 Saving Draft:", data);
+            
+            // Convert form data to backend API format
+            const eventData = {
+                title: data.title,
+                description: data.description,
+                date: new Date(`${data.dateTime.date}T${data.dateTime.startTime}:00Z`).toISOString(),
+                location: `${data.location.venueName}, ${data.location.city}`,
+                capacity: data.ticketing.totalTickets,
+                registeredCount: 0,
+                basePrice: data.ticketing.price,
+                isActive: false, // Draft events are not active
+                imageUrl: "https://example.com/event-image.jpg", // Default image
+                googleMapsUrl: data.location.mapLink || `https://maps.google.com/?q=${encodeURIComponent(data.location.address)}`
+            };
+
+            const createdEvent = await createEvent(eventData);
+            console.log("✅ Draft saved successfully:", createdEvent);
+            alert("Draft saved successfully!");
+            
+            // Call callbacks
+            onEventCreated?.();
+            onClose?.();
+        } catch (error) {
+            console.error("❌ Failed to save draft:", error);
+            alert(`Failed to save draft: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
     };
 
     const onPublish = async (data: EventFormValues) => {
-        console.log("Publishing Event:", { ...data, status: "Published" });
-        // Simulate API call to NestJS
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        alert("Event published successfully!");
+        try {
+            console.log("🚀 Publishing Event:", data);
+            
+            // Convert form data to backend API format
+            const eventData = {
+                title: data.title,
+                description: data.description,
+                date: new Date(`${data.dateTime.date}T${data.dateTime.startTime}:00Z`).toISOString(),
+                location: `${data.location.venueName}, ${data.location.city}`,
+                capacity: data.ticketing.totalTickets,
+                registeredCount: 0,
+                basePrice: data.ticketing.price,
+                isActive: true, // Published events are active
+                imageUrl: "https://example.com/event-image.jpg", // Default image
+                googleMapsUrl: data.location.mapLink || `https://maps.google.com/?q=${encodeURIComponent(data.location.address)}`
+            };
+
+            const createdEvent = await createEvent(eventData);
+            console.log("✅ Event published successfully:", createdEvent);
+            alert("Event published successfully!");
+            
+            // Call callbacks
+            onEventCreated?.();
+            onClose?.();
+        } catch (error) {
+            console.error("❌ Failed to publish event:", error);
+            alert(`Failed to publish event: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
     };
 
     return (
@@ -71,39 +127,38 @@ export default function CreateEventForm() {
                 </div>
             </div>
 
-            {/* Floating Action Bar */}
-            <div className="fixed bottom-0 left-0 right-0 bg-[#020617]/80 backdrop-blur-md border-t border-slate-800 p-4 z-50">
-                <div className="max-w-4xl mx-auto flex items-center justify-between">
+            {/* Action Buttons */}
+            <div className="border-t border-slate-700 pt-6 mt-8">
+                <div className="flex items-center justify-end space-x-4">
                     <Button
                         type="button"
-                        onClick={() => window.history.back()}
-                        className="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg px-6 py-2.5 transition-all"
+                        disabled={isSubmitting}
+                        onClick={onClose}
+                        className="flex items-center space-x-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg px-6 py-2.5 transition-all"
                     >
                         <X className="w-4 h-4" />
                         <span>Cancel</span>
                     </Button>
 
-                    <div className="flex items-center space-x-4">
-                        <Button
-                            type="button"
-                            disabled={isSubmitting}
-                            onClick={handleSubmit(onSaveDraft)}
-                            className="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg px-6 py-2.5 transition-all"
-                        >
-                            <Save className="w-4 h-4" />
-                            <span>Save Draft</span>
-                        </Button>
+                    <Button
+                        type="button"
+                        disabled={isSubmitting}
+                        onClick={handleSubmit(onSaveDraft)}
+                        className="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg px-6 py-2.5 transition-all"
+                    >
+                        <Save className="w-4 h-4" />
+                        <span>Save Draft</span>
+                    </Button>
 
-                        <Button
-                            type="button"
-                            disabled={isSubmitting}
-                            onClick={handleSubmit(onPublish)}
-                            className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-8 py-2.5 font-semibold transition-all shadow-lg shadow-blue-500/20"
-                        >
-                            <Send className="w-4 h-4" />
-                            <span>Publish Event Now</span>
-                        </Button>
-                    </div>
+                    <Button
+                        type="button"
+                        disabled={isSubmitting}
+                        onClick={handleSubmit(onPublish)}
+                        className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-8 py-2.5 font-semibold transition-all shadow-lg shadow-blue-500/20"
+                    >
+                        <Send className="w-4 h-4" />
+                        <span>Publish Event Now</span>
+                    </Button>
                 </div>
             </div>
         </form>

@@ -6,15 +6,23 @@
 import { Event, CreateEventRequest, UpdateEventRequest, EventListResponse, EventStats } from '@/types/event';
 import { getSession } from '@/lib/custom-auth';
 
-// API Base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+// API Base URL - Use same logic as auth services
+const API_BASE_URL = process.env.NODE_ENV === 'development' 
+  ? "http://localhost:3000" 
+  : (process.env.NEXT_PUBLIC_API_URL || "https://event-ticket-production.up.railway.app");
 
 /**
  * Get authentication headers for API requests
  */
 const getAuthHeaders = async () => {
-    const session = await getSession();
-    const token = session ? localStorage.getItem('accessToken') : null;
+    // Get token directly from localStorage for more reliability
+    const token = localStorage.getItem('accessToken');
+    
+    console.log('🔑 Token check:', {
+        hasToken: !!token,
+        tokenLength: token?.length,
+        tokenStart: token?.substring(0, 10) + '...'
+    });
     
     return {
         'Content-Type': 'application/json',
@@ -103,16 +111,23 @@ export async function getEventById(id: string): Promise<Event> {
  */
 export async function createEvent(eventData: CreateEventRequest): Promise<Event> {
     try {
-        console.log('🔍 Creating event:', eventData.title);
+        console.log('� Creating event:', eventData.title);
+        console.log('🌐 API URL:', `${API_BASE_URL}/api/events`);
         
         const headers = await getAuthHeaders();
+        console.log('📤 Request headers:', headers);
+        
         const response = await fetch(`${API_BASE_URL}/api/events`, {
             method: 'POST',
             headers,
             body: JSON.stringify(eventData)
         });
 
+        console.log('📥 Response status:', response.status);
+        console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
+
         const data = await response.json();
+        console.log('📊 Response data:', data);
 
         if (!response.ok) {
             handleApiError(response, data);
