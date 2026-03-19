@@ -152,7 +152,7 @@ export default function AdminLoginPage() {
                                     type="email"
                                     {...register("email")}
                                     placeholder="admin@eventmanager.com"
-                                    className={`block w-full pl-10 pr-3 py-3 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                                    className={`block w-full pl-10 pr-3 py-3 bg-white/10 border rounded-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
                                         errors.email ? "border-red-500" : "border-white/20"
                                     }`}
                                     disabled={isLoading || isBlocked}
@@ -188,7 +188,7 @@ export default function AdminLoginPage() {
                                     type={showPassword ? "text" : "password"}
                                     {...register("password")}
                                     placeholder="Admin123!"
-                                    className={`block w-full pl-10 pr-12 py-3 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                                    className={`block w-full pl-10 pr-12 py-3 bg-white/10 border rounded-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
                                         errors.password ? "border-red-500" : "border-white/20"
                                     }`}
                                     disabled={isLoading || isBlocked}

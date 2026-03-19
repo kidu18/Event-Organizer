@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Shield, Users, Calendar, Settings, LogOut, TrendingUp, Activity, DollarSign, Eye, Edit, Trash2, Plus, Search, Filter, Download, Bell, UserCheck, Clock, CheckCircle, XCircle, AlertTriangle, User as UserIcon } from "lucide-react";
 import { getSession, isAdmin, logout } from "@/lib/custom-auth";
 import type { User } from "@/lib/custom-auth";
@@ -52,7 +53,7 @@ export default function AdminDashboardPage() {
                 console.log('🔴 Admin dashboard: Admin check:', adminCheck);
                 
                 if (!session || !adminCheck) {
-                    console.log('🔒 No admin access, redirecting to login');
+                    console.log('🔒 No admin access, redirecting to admin login page');
                     router.push('/admin/login');
                     return;
                 }
@@ -91,7 +92,7 @@ export default function AdminDashboardPage() {
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading admin dashboard...</p>
+                    <p className="text-black">Loading admin dashboard...</p>
                 </div>
             </div>
         );
@@ -107,26 +108,35 @@ export default function AdminDashboardPage() {
                             <div className="flex items-center">
                                 <Shield className="w-8 h-8 text-purple-600 mr-3" />
                                 <div>
-                                    <h1 className="text-xl font-bold text-gray-900">Admin Dashboard</h1>
-                                    <p className="text-xs text-gray-500">Event Management System</p>
+                                    <h1 className="text-xl font-bold text-black">Admin Dashboard</h1>
+                                    <p className="text-xs text-black">Event Management System</p>
                                 </div>
                             </div>
                             
                             {/* Navigation Tabs */}
                             <nav className="hidden md:flex space-x-1">
-                                {['overview', 'users', 'events', 'bookings', 'analytics'].map((tab) => (
+                                {['overview', 'users', 'bookings', 'analytics'].map((tab) => (
                                     <button
                                         key={tab}
                                         onClick={() => setActiveTab(tab)}
                                         className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                                             activeTab === tab
                                                 ? 'bg-purple-100 text-purple-700'
-                                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                                                : 'text-black hover:text-gray-900 hover:bg-gray-100'
                                         }`}
                                     >
                                         {tab.charAt(0).toUpperCase() + tab.slice(1)}
                                     </button>
                                 ))}
+                                {/* Events tab - navigates to /admin/events */}
+                                <Link
+                                    href="/admin/events"
+                                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                                            'text-black hover:text-gray-900 hover:bg-gray-100'
+                                        }`}
+                                >
+                                    Events
+                                </Link>
                             </nav>
                         </div>
                         
@@ -147,7 +157,7 @@ export default function AdminDashboardPage() {
                             <div className="relative">
                                 <button
                                     onClick={() => setShowNotifications(!showNotifications)}
-                                    className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                                    className="relative p-2 text-black hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
                                 >
                                     <Bell className="w-5 h-5" />
                                     <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
@@ -354,28 +364,6 @@ export default function AdminDashboardPage() {
                                         ))}
                                     </tbody>
                                 </table>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Events Tab */}
-                {activeTab === 'events' && (
-                    <div className="space-y-6">
-                        <div className="bg-white shadow rounded-lg">
-                            <div className="px-6 py-4 border-b border-gray-200">
-                                <div className="flex justify-between items-center">
-                                    <h3 className="text-lg font-medium text-gray-900">Events Management</h3>
-                                    <button className="flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700">
-                                        <Plus className="w-4 h-4 mr-2" />
-                                        Create Event
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-                                {filteredEvents.map((event) => (
-                                    <EventCard key={event.id} event={event} />
-                                ))}
                             </div>
                         </div>
                     </div>

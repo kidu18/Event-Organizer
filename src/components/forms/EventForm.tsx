@@ -51,7 +51,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       {/* Basic Information */}
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+        <h2 className="text-xl font-semibold text-black flex items-center gap-2">
           <Tag className="w-5 h-5" />
           Basic Information
         </h2>
@@ -62,7 +62,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
           </label>
           <input
             {...register("title")}
-            className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="Enter event title"
           />
           {errors.title && (
@@ -77,7 +77,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
           <textarea
             {...register("description")}
             rows={4}
-            className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="Describe your event..."
           />
           {errors.description && (
@@ -91,7 +91,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
           </label>
           <select
             {...register("category")}
-            className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option value="">Select category</option>
             <option value="Technology">Technology</option>
@@ -108,7 +108,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
 
       {/* Date & Time */}
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+        <h2 className="text-xl font-semibold text-black flex items-center gap-2">
           <Calendar className="w-5 h-5" />
           Date & Time
         </h2>
@@ -120,7 +120,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
           <input
             type="date"
             {...register("dateTime.date")}
-            className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
           {errors.dateTime?.date && (
             <p className="mt-1 text-sm text-red-400">{errors.dateTime.date.message}</p>
@@ -136,7 +136,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
             <input
               type="time"
               {...register("dateTime.startTime")}
-              className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             {errors.dateTime?.startTime && (
               <p className="mt-1 text-sm text-red-400">{errors.dateTime.startTime.message}</p>
@@ -151,7 +151,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
             <input
               type="time"
               {...register("dateTime.endTime")}
-              className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             {errors.dateTime?.endTime && (
               <p className="mt-1 text-sm text-red-400">{errors.dateTime.endTime.message}</p>
@@ -162,7 +162,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
 
       {/* Location */}
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+        <h2 className="text-xl font-semibold text-black flex items-center gap-2">
           <MapPin className="w-5 h-5" />
           Location
         </h2>
@@ -173,7 +173,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
           </label>
           <input
             {...register("location.venueName")}
-            className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="e.g., Convention Center"
           />
           {errors.location?.venueName && (
@@ -188,7 +188,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
             </label>
             <input
               {...register("location.city")}
-              className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="e.g., New York"
             />
             {errors.location?.city && (
@@ -202,7 +202,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
             </label>
             <input
               {...register("location.address")}
-              className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="Full address"
             />
             {errors.location?.address && (
@@ -217,7 +217,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
           </label>
           <input
             {...register("location.mapLink")}
-            className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="https://maps.google.com/..."
           />
           {errors.location?.mapLink && (
@@ -228,7 +228,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
 
       {/* Ticketing */}
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+        <h2 className="text-xl font-semibold text-black flex items-center gap-2">
           <Users className="w-5 h-5" />
           Ticketing
         </h2>
@@ -239,7 +239,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
           </label>
           <select
             {...register("ticketing.type")}
-            className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option value="Free">Free</option>
             <option value="Paid">Paid</option>
@@ -259,7 +259,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
               min="0"
               {...register("ticketing.price", { valueAsNumber: true })}
               disabled={ticketType === "Free"}
-              className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+              className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
               placeholder="0.00"
             />
             {errors.ticketing?.price && (
@@ -275,7 +275,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
               type="number"
               min="1"
               {...register("ticketing.totalTickets", { valueAsNumber: true })}
-              className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="100"
             />
             {errors.ticketing?.totalTickets && (
@@ -287,7 +287,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
 
       {/* Event Image */}
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+        <h2 className="text-xl font-semibold text-black flex items-center gap-2">
           <Image className="w-5 h-5" />
           Event Image
         </h2>
@@ -300,7 +300,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
             type="file"
             accept="image/*"
             onChange={handleImageChange}
-            className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700"
+            className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-black file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-black hover:file:bg-indigo-700"
           />
         </div>
 
@@ -326,7 +326,7 @@ export default function EventForm({ onSubmit, isLoading = false }: EventFormProp
         <button
           type="submit"
           disabled={isLoading}
-          className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 py-2 bg-indigo-600 text-black rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? "Creating..." : "Publish Event"}
         </button>

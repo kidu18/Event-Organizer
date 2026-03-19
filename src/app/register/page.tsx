@@ -91,7 +91,7 @@ export default function UserRegistrationPage() {
                         type="text"
                         {...register("firstName")}
                         placeholder="John"
-                        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                        className={`w-full px-4 py-3 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
                             errors.firstName ? "border-red-500" : "border-gray-300"
                         }`}
                     />
@@ -112,7 +112,7 @@ export default function UserRegistrationPage() {
                         type="text"
                         {...register("lastName")}
                         placeholder="Doe"
-                        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                        className={`w-full px-4 py-3 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
                             errors.lastName ? "border-red-500" : "border-gray-300"
                         }`}
                     />
@@ -138,7 +138,7 @@ export default function UserRegistrationPage() {
                         type="email"
                         {...register("email")}
                         placeholder="john.doe@example.com"
-                        className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                        className={`w-full pl-10 pr-4 py-3 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
                             errors.email ? "border-red-500" : "border-gray-300"
                         }`}
                     />
@@ -160,7 +160,7 @@ export default function UserRegistrationPage() {
                     type="tel"
                     {...register("phone")}
                     placeholder="+1 (555) 123-4567"
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                    className={`w-full px-4 py-3 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
                         errors.phone ? "border-red-500" : "border-gray-300"
                     }`}
                 />
@@ -208,7 +208,7 @@ export default function UserRegistrationPage() {
                         type={showPassword ? "text" : "password"}
                         {...register("password")}
                         placeholder="Create a strong password"
-                        className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                        className={`w-full pl-10 pr-12 py-3 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
                             errors.password ? "border-red-500" : "border-gray-300"
                         }`}
                     />
@@ -245,7 +245,7 @@ export default function UserRegistrationPage() {
                         type={showConfirmPassword ? "text" : "password"}
                         {...register("confirmPassword")}
                         placeholder="Confirm your password"
-                        className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                        className={`w-full pl-10 pr-12 py-3 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
                             errors.confirmPassword ? "border-red-500" : "border-gray-300"
                         }`}
                     />

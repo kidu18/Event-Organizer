@@ -1,6 +1,9 @@
 import { AuthResponse } from "@/types/auth"
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://event-ticket-production.up.railway.app"
+// Use local API for development, external API for production
+const API_URL = process.env.NODE_ENV === 'development' 
+  ? "http://localhost:3000" 
+  : (process.env.NEXT_PUBLIC_API_URL || "https://event-ticket-production.up.railway.app")
 
 export async function login(
   email: string,
@@ -8,7 +11,12 @@ export async function login(
 ): Promise<AuthResponse> {
   console.log('🔍 Login attempt:', { email })
 
-  const response = await fetch(`${API_URL}/api/auth/login`, {
+  // Use test API for development
+  const loginEndpoint = process.env.NODE_ENV === 'development' 
+    ? '/api/test/login' 
+    : '/api/auth/login'
+
+  const response = await fetch(`${API_URL}${loginEndpoint}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -34,7 +42,12 @@ export async function register(
 ): Promise<AuthResponse> {
   console.log('📝 Registration attempt:', { email: data.email })
 
-  const response = await fetch(`${API_URL}/api/auth/register`, {
+  // Use local API for development
+  const registerEndpoint = process.env.NODE_ENV === 'development' 
+    ? '/api/auth/register' 
+    : '/api/auth/register'
+
+  const response = await fetch(`${API_URL}${registerEndpoint}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

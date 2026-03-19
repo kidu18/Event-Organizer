@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
     
     // Check if accessing admin routes
     if (pathname.startsWith('/admin')) {
-        // Skip protection for login page
+        // Skip protection for admin login page
         if (pathname === '/admin/login') {
             return NextResponse.next();
         }
@@ -27,7 +27,7 @@ export function middleware(request: NextRequest) {
     
     // Check if accessing user routes
     if (pathname.startsWith('/user') || pathname.startsWith('/my-tickets')) {
-        // Skip protection for login page
+        // Skip protection for user login page
         if (pathname === '/login') {
             return NextResponse.next();
         }

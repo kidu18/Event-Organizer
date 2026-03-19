@@ -40,7 +40,7 @@ export default function CreateEventPage() {
         }, 1500);
     };
 
-    const inputClasses = "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all";
+    const inputClasses = "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-black placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all";
     const labelClasses = "block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1";
 
     return (

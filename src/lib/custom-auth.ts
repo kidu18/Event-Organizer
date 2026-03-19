@@ -14,7 +14,7 @@ export interface Session {
   expires: string | null;
 }
 
-// Get current session from localStorage
+// Get current session from localStorage or cookies
 export function getSession(): Promise<Session | null> {
   return new Promise((resolve) => {
     if (typeof window === 'undefined') {
@@ -23,11 +23,26 @@ export function getSession(): Promise<Session | null> {
     }
 
     try {
-      const userStr = localStorage.getItem('user');
-      const loginTime = localStorage.getItem('loginTime');
-      const isAdmin = localStorage.getItem('isAdmin');
+      // First try localStorage
+      let userStr = localStorage.getItem('user');
+      let loginTime = localStorage.getItem('loginTime');
+      let isAdmin = localStorage.getItem('isAdmin');
+
+      // If localStorage is empty, try cookies
+      if (!userStr) {
+        const userCookie = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('user='));
+        
+        if (userCookie) {
+          userStr = decodeURIComponent(userCookie.split('=')[1]);
+          loginTime = new Date().toISOString(); // Use current time for cookie sessions
+          isAdmin = 'true'; // Assume admin if accessing admin routes
+        }
+      }
 
       if (!userStr || !loginTime) {
+        console.log(' No session data found in localStorage or cookies');
         resolve(null);
         return;
       }
@@ -40,16 +55,24 @@ export function getSession(): Promise<Session | null> {
       const hoursDiff = (now.getTime() - loginDate.getTime()) / (1000 * 60 * 60);
       
       if (hoursDiff > 24) {
-        // Session expired
+        console.log(' Session expired');
+        // Clear expired session
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
         localStorage.removeItem('isAdmin');
         localStorage.removeItem('loginTime');
+        
+        // Clear cookies too
+        document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        document.cookie = 'user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        
         resolve(null);
         return;
       }
 
+      console.log(' Session found:', { user: user.email, role: user.role });
+      
       resolve({
         user: {
           id: user.id,
@@ -59,11 +82,10 @@ export function getSession(): Promise<Session | null> {
           firstName: user.firstName,
           lastName: user.lastName
         },
-        expires: new Date(loginDate.getTime() + 24 * 60 * 60 * 1000).toISOString()
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
       });
-
     } catch (error) {
-      console.error('Error getting session:', error);
+      console.error(' Session error:', error);
       resolve(null);
     }
   });
@@ -80,21 +102,29 @@ export function isAuthenticated(): boolean {
   return !!(token && user && loginTime);
 }
 
-// Check if user is admin
+// Check if user has admin role
 export function isAdmin(): boolean {
   if (typeof window === 'undefined') return false;
   
-  const isAdminFlag = localStorage.getItem('isAdmin') === 'true';
-  const userStr = localStorage.getItem('user');
+  // Check localStorage first
+  const isAdmin = localStorage.getItem('isAdmin');
+  if (isAdmin === 'true') return true;
   
-  if (!isAdminFlag || !userStr) return false;
+  // Check cookies as fallback
+  const userCookie = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('user='));
   
-  try {
-    const user = JSON.parse(userStr);
-    return user.role === 'ADMIN' || user.role === 'admin';
-  } catch {
-    return false;
+  if (userCookie) {
+    try {
+      const user = JSON.parse(decodeURIComponent(userCookie.split('=')[1]));
+      return user.role === 'ADMIN' || user.role === 'admin';
+    } catch (error) {
+      console.error('Error parsing user cookie:', error);
+      return false;
+    }
   }
+  return false;
 }
 
 // Logout user

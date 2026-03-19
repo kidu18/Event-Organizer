@@ -110,7 +110,7 @@ export default function ChangePasswordPage() {
                                 <input
                                     {...register("currentPassword")}
                                     type="password"
-                                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all"
+                                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-indigo-500 transition-all"
                                     placeholder="••••••••"
                                 />
                             </div>
@@ -130,7 +130,7 @@ export default function ChangePasswordPage() {
                                 <input
                                     {...register("newPassword")}
                                     type="password"
-                                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all"
+                                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-indigo-500 transition-all"
                                     placeholder="•••••••••"
                                 />
                             </div>
@@ -150,7 +150,7 @@ export default function ChangePasswordPage() {
                                 <input
                                     {...register("confirmPassword")}
                                     type="password"
-                                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all"
+                                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-indigo-500 transition-all"
                                     placeholder="•••••••••"
                                 />
                             </div>
