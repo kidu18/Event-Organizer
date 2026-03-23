@@ -1,27 +1,16 @@
-import NextAuth, { DefaultSession } from "next-auth";
-import { JWT } from "next-auth/jwt";
+/**
+ * DEPRECATED: NextAuth type declarations.
+ * 
+ * This project no longer uses NextAuth for authentication.
+ * Authentication is now handled by custom cookie-based auth:
+ * - Services: @/services/authServices.ts
+ * - Server Actions: @/actions/authActions.ts
+ * - Client Hook: @/hooks/useAuth.ts
+ * - Provider: @/components/providers/AuthProvider.tsx
+ * - Types: @/types/auth.ts
+ * 
+ * This file is kept to prevent TypeScript errors from any 
+ * residual next-auth package references.
+ */
 
-declare module "next-auth" {
-    /**
-     * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
-     */
-    interface Session {
-        user: {
-            id: string;
-            role: string;
-        } & DefaultSession["user"];
-    }
-
-    interface User {
-        id: string;
-        role: string;
-    }
-}
-
-declare module "next-auth/jwt" {
-    /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
-    interface JWT {
-        id: string;
-        role: string;
-    }
-}
+export {}

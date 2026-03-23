@@ -2,12 +2,12 @@
 
 import React from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { useSession } from "next-auth/react";
+import { useAuthContext } from "@/components/providers/AuthProvider";
 import { Calendar, Search, Ticket } from "lucide-react";
 import Link from "next/link";
 
 export default function UserDashboardPage() {
-    const { data: session } = useSession();
+    const { user } = useAuthContext();
     const [mounted, setMounted] = React.useState(false);
 
     React.useEffect(() => {
@@ -24,7 +24,7 @@ export default function UserDashboardPage() {
                 <div className="py-10">
                     <div className="mb-10">
                         <h1 className="text-4xl font-black text-white tracking-tight mb-3">
-                            Welcome back, {session?.user?.name?.split(" ")[0]}! 👋
+                            Welcome back, {user?.firstName || "there"}! 👋
                         </h1>
                         <p className="text-slate-400 text-lg max-w-2xl">
                             Ready for your next adventure? Check out the trending events or manage your upcoming bookings.

@@ -1,60 +1,46 @@
-/** CONCEPT: The Authentication Logic Engine. This defines HOW users log in (Credentials) and HOW sessions are managed (JWT). */
-import { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { db } from "./db";
+/**
+ * Auth utility functions for server-side use.
+ * Replaces the old NextAuth configuration.
+ * 
+ * For server actions, use: @/actions/authActions
+ * For client hooks, use: @/hooks/useAuth
+ * For context provider, use: @/components/providers/AuthProvider
+ */
 
-export const authOptions: NextAuthOptions = {
-    providers: [
-        CredentialsProvider({
-            name: "Credentials",
-            credentials: {
-                email: { label: "Email", type: "email", placeholder: "admin@example.com" },
-                password: { label: "Password", type: "password" }
-            },
-            async authorize(credentials) {
-                if (!credentials?.email || !credentials?.password) {
-                    return null;
-                }
+import { cookies } from "next/headers"
+import type { User } from "@/types/auth"
 
-                const user = await db.user.findUnique({
-                    where: { email: credentials.email }
-                });
+/**
+ * Get the current authenticated user from cookies (server-side).
+ * Returns null if not authenticated.
+ */
+export async function getCurrentUser(): Promise<User | null> {
+  const cookieStore = await cookies()
+  const userStr = cookieStore.get("user")?.value
+  const accessToken = cookieStore.get("accessToken")?.value
 
-                if (!user || user.password !== credentials.password) {
-                    return null;
-                }
+  if (!userStr || !accessToken) return null
 
-                return {
-                    id: user.id,
-                    email: user.email,
-                    name: user.name,
-                    role: user.role
-                };
-            }
-        })
-    ],
-    callbacks: {
-        async jwt({ token, user }) {
-            if (user) {
-                token.id = user.id;
-                token.role = (user as any).role;
-            }
-            return token;
-        },
-        async session({ session, token }) {
-            if (session.user) {
-                (session.user as any).id = token.id;
-                (session.user as any).role = token.role;
-            }
-            return session;
-        }
-    },
-    pages: {
-        signIn: "/auth/login",
-    },
-    session: {
-        strategy: "jwt",
-    },
-    secret: process.env.NEXTAUTH_SECRET || "fallback-secret-for-dev-only",
-};
+  try {
+    return JSON.parse(userStr) as User
+  } catch {
+    return null
+  }
+}
 
+/**
+ * Get the current access token from cookies (server-side).
+ * Useful for making authenticated API calls from server components.
+ */
+export async function getAccessToken(): Promise<string | null> {
+  const cookieStore = await cookies()
+  return cookieStore.get("accessToken")?.value || null
+}
+
+/**
+ * Check if the current user has a specific role (server-side).
+ */
+export async function hasRole(role: string): Promise<boolean> {
+  const user = await getCurrentUser()
+  return user?.role?.toUpperCase() === role.toUpperCase()
+}

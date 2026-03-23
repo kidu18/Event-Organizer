@@ -1,8 +1,19 @@
 "use server"
 
+// ─── Server Actions for Authentication ──────────────────────────────────────
+// These run on the server and handle cookie management + call auth services.
+// Client components call these via the useAuth hook.
+
 import { cookies } from "next/headers"
-import { login as loginService, register as registerService, refresh as refreshService } from "@/services/authServices"
-import { AuthResponse } from "@/types/auth"
+import {
+  login as loginService,
+  register as registerService,
+  refreshToken as refreshService,
+  logout as logoutService,
+} from "@/services/authServices"
+import { AuthActionResult, LoginInput, RegisterInput } from "@/types/auth"
+
+// ─── Cookie configuration ───────────────────────────────────────────────────
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -11,113 +22,182 @@ const COOKIE_OPTIONS = {
   path: "/",
 }
 
-export async function loginAction(email: string, password: string) {
-  try {
-    const response: AuthResponse = await loginService(email, password)
-    
-    const cookieStore = await cookies()
-    
-    cookieStore.set("accessToken", response.accessToken, {
-      ...COOKIE_OPTIONS,
-      maxAge: response.expiresIn || 900, // Default to 15 mins if not provided
-    })
-    
-    cookieStore.set("refreshToken", response.refreshToken, {
-      ...COOKIE_OPTIONS,
-      maxAge: 7 * 24 * 60 * 60, // 7 days
-    })
+// ─── Helper: Parse error code from service errors ───────────────────────────
+// Service errors follow the pattern "CODE::Human readable message"
 
-    // Store user data in a cookie (non-httpOnly so client can read basic info if needed)
-    // Or just let the client store it in localStorage/State
-    cookieStore.set("user", JSON.stringify(response.user), {
-      ...COOKIE_OPTIONS,
-      httpOnly: false, // Allow client to read user info
-    })
-
-    return { success: true, data: response }
-  } catch (error) {
-    return { success: false, error: error instanceof Error ? error.message : "Authentication failed" }
+function parseServiceError(error: unknown): { message: string; errorCode: AuthActionResult["errorCode"] } {
+  if (!(error instanceof Error)) {
+    return { message: "An unexpected error occurred. Please try again.", errorCode: "UNKNOWN" }
   }
+
+  const parts = error.message.split("::")
+  if (parts.length === 2) {
+    const code = parts[0] as AuthActionResult["errorCode"]
+    const message = parts[1]
+    return { message, errorCode: code }
+  }
+
+  return { message: error.message, errorCode: "UNKNOWN" }
 }
 
-export async function registerAction(data: { email: string; password?: string; firstName: string; lastName: string }) {
-  try {
-    const response: AuthResponse = await registerService(data)
-    
-    const cookieStore = await cookies()
-    
-    cookieStore.set("accessToken", response.accessToken, {
-      ...COOKIE_OPTIONS,
-      maxAge: response.expiresIn || 900,
-    })
-    
-    cookieStore.set("refreshToken", response.refreshToken, {
-      ...COOKIE_OPTIONS,
-      maxAge: 7 * 24 * 60 * 60,
-    })
+// ─── Helper: Store auth tokens in cookies ───────────────────────────────────
 
-    cookieStore.set("user", JSON.stringify(response.user), {
-      ...COOKIE_OPTIONS,
-      httpOnly: false,
-    })
+async function storeAuthCookies(accessToken: string, refreshToken: string, user: object, expiresIn?: number) {
+  const cookieStore = await cookies()
 
-    return { success: true, data: response }
-  } catch (error) {
-    return { success: false, error: error instanceof Error ? error.message : "Registration failed" }
-  }
+  cookieStore.set("accessToken", accessToken, {
+    ...COOKIE_OPTIONS,
+    maxAge: expiresIn || 900, // Default 15 min
+  })
+
+  cookieStore.set("refreshToken", refreshToken, {
+    ...COOKIE_OPTIONS,
+    maxAge: 7 * 24 * 60 * 60, // 7 days
+  })
+
+  // User data cookie (readable by client for UI display)
+  cookieStore.set("user", JSON.stringify(user), {
+    ...COOKIE_OPTIONS,
+    httpOnly: false,
+  })
 }
 
-export async function logoutAction() {
+// ─── Helper: Clear all auth cookies ─────────────────────────────────────────
+
+async function clearAuthCookies() {
   const cookieStore = await cookies()
   cookieStore.delete("accessToken")
   cookieStore.delete("refreshToken")
   cookieStore.delete("user")
-  return { success: true }
 }
+
+// ─── LOGIN ACTION ───────────────────────────────────────────────────────────
+
+export async function loginAction(input: LoginInput): Promise<AuthActionResult> {
+  console.log("🔐 [AuthAction] Login action started for:", input.email)
+
+  try {
+    const response = await loginService(input)
+
+    await storeAuthCookies(
+      response.accessToken,
+      response.refreshToken,
+      response.user,
+      response.expiresIn
+    )
+
+    console.log("✅ [AuthAction] Login action completed — cookies set for user:", response.user.email)
+
+    return { success: true, data: response }
+  } catch (error) {
+    const { message, errorCode } = parseServiceError(error)
+    console.error("❌ [AuthAction] Login action failed:", { errorCode, message })
+    return { success: false, error: message, errorCode }
+  }
+}
+
+// ─── REGISTER ACTION ────────────────────────────────────────────────────────
+
+export async function registerAction(input: RegisterInput): Promise<AuthActionResult> {
+  console.log("📝 [AuthAction] Register action started for:", input.email)
+
+  try {
+    const response = await registerService(input)
+
+    await storeAuthCookies(
+      response.accessToken,
+      response.refreshToken,
+      response.user,
+      response.expiresIn
+    )
+
+    console.log("✅ [AuthAction] Register action completed — user created:", response.user.email)
+
+    return { success: true, data: response }
+  } catch (error) {
+    const { message, errorCode } = parseServiceError(error)
+    console.error("❌ [AuthAction] Register action failed:", { errorCode, message })
+    return { success: false, error: message, errorCode }
+  }
+}
+
+// ─── LOGOUT ACTION ──────────────────────────────────────────────────────────
+
+export async function logoutAction(): Promise<AuthActionResult> {
+  console.log("🚪 [AuthAction] Logout action started")
+
+  try {
+    // Get the access token to send to backend for server-side logout
+    const cookieStore = await cookies()
+    const accessToken = cookieStore.get("accessToken")?.value
+
+    if (accessToken) {
+      await logoutService(accessToken)
+    }
+
+    await clearAuthCookies()
+
+    console.log("✅ [AuthAction] Logout action completed — cookies cleared")
+    return { success: true }
+  } catch (error) {
+    // Even if server logout fails, still clear cookies
+    await clearAuthCookies()
+    console.warn("⚠️ [AuthAction] Logout had server error but cookies cleared:", error)
+    return { success: true }
+  }
+}
+
+// ─── REFRESH ACTION ─────────────────────────────────────────────────────────
+
+export async function refreshAction(): Promise<AuthActionResult> {
+  console.log("🔄 [AuthAction] Refresh action started")
+
+  try {
+    const cookieStore = await cookies()
+    const refreshTokenValue = cookieStore.get("refreshToken")?.value
+
+    if (!refreshTokenValue) {
+      console.warn("⚠️ [AuthAction] No refresh token found in cookies")
+      return { success: false, error: "Session expired. Please sign in again.", errorCode: "UNAUTHORIZED" }
+    }
+
+    const response = await refreshService(refreshTokenValue)
+
+    await storeAuthCookies(
+      response.accessToken,
+      response.refreshToken,
+      response.user,
+      response.expiresIn
+    )
+
+    console.log("✅ [AuthAction] Refresh action completed — new tokens set")
+    return { success: true, data: response }
+  } catch (error) {
+    const { message, errorCode } = parseServiceError(error)
+    console.error("❌ [AuthAction] Refresh action failed:", { errorCode, message })
+
+    // If refresh failed, clear stale cookies
+    await clearAuthCookies()
+
+    return { success: false, error: message, errorCode }
+  }
+}
+
+// ─── GET SESSION (for SSR/middleware) ────────────────────────────────────────
 
 export async function getAuthSession() {
   const cookieStore = await cookies()
   const accessToken = cookieStore.get("accessToken")?.value
-  const user = cookieStore.get("user")?.value
-  
-  if (!accessToken || !user) return null
-  
+  const userStr = cookieStore.get("user")?.value
+
+  if (!accessToken || !userStr) return null
+
   try {
     return {
       accessToken,
-      user: JSON.parse(user)
+      user: JSON.parse(userStr),
     }
   } catch {
     return null
-  }
-}
-
-export async function refreshAction() {
-  try {
-    const cookieStore = await cookies()
-    const refreshToken = cookieStore.get("refreshToken")?.value
-    
-    if (!refreshToken) throw new Error("No refresh token available")
-    
-    const response = await refreshService(refreshToken)
-    
-    cookieStore.set("accessToken", response.accessToken, {
-      ...COOKIE_OPTIONS,
-      maxAge: response.expiresIn || 900,
-    })
-    
-    cookieStore.set("refreshToken", response.refreshToken, {
-      ...COOKIE_OPTIONS,
-      maxAge: 7 * 24 * 60 * 60,
-    })
-
-    cookieStore.set("user", JSON.stringify(response.user), {
-      ...COOKIE_OPTIONS,
-      httpOnly: false,
-    })
-
-    return { success: true, data: response }
-  } catch (error) {
-    return { success: false, error: error instanceof Error ? error.message : "Token refresh failed" }
   }
 }

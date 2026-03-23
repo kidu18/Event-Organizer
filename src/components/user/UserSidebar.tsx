@@ -11,8 +11,10 @@ import {
     User,
     Settings,
     HelpCircle,
-    MapPin
+    MapPin,
+    LogOut
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
     { name: "Home Feed", icon: LayoutDashboard, href: "/user" },
@@ -23,6 +25,7 @@ const navItems = [
 
 export default function UserSidebar() {
     const pathname = usePathname();
+    const { logout } = useAuth();
 
     return (
         <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0f172a] border-r border-white/5 flex flex-col z-50">
@@ -62,18 +65,37 @@ export default function UserSidebar() {
             {/* Bottom Actions */}
             <div className="p-4 mt-auto space-y-4">
                 <div className="pt-4 border-t border-white/5 space-y-1">
-                    <Link href="/user/profile" className="flex items-center gap-3 px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 transition-colors">
+                    <Link
+                        href="/user/profile"
+                        className={`flex items-center gap-3 px-4 py-2 text-xs font-medium transition-colors ${pathname === "/user/profile" ? "text-blue-400" : "text-slate-500 hover:text-slate-300"
+                            }`}
+                    >
                         <User className="w-4 h-4" />
                         My Profile
                     </Link>
-                    <Link href="/user/settings" className="flex items-center gap-3 px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 transition-colors">
+                    <Link
+                        href="/user/settings"
+                        className={`flex items-center gap-3 px-4 py-2 text-xs font-medium transition-colors ${pathname === "/user/settings" ? "text-blue-400" : "text-slate-500 hover:text-slate-300"
+                            }`}
+                    >
                         <Settings className="w-4 h-4" />
                         Settings
                     </Link>
-                    <Link href="/user/help" className="flex items-center gap-3 px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 transition-colors">
+                    <Link
+                        href="/user/help"
+                        className={`flex items-center gap-3 px-4 py-2 text-xs font-medium transition-colors ${pathname === "/user/help" ? "text-blue-400" : "text-slate-500 hover:text-slate-300"
+                            }`}
+                    >
                         <HelpCircle className="w-4 h-4" />
                         Help Center
                     </Link>
+                    <button
+                        onClick={() => logout()}
+                        className="w-full flex items-center gap-3 px-4 py-2 text-xs font-medium text-red-500/70 hover:text-red-400 hover:bg-red-500/5 rounded-lg transition-all"
+                    >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                    </button>
                 </div>
             </div>
         </aside>

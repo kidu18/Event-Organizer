@@ -1,11 +1,22 @@
-/** CONCEPT: The Registration Interface. This allows new users to create an account in the database. */
-import React from "react";
+/** 
+ * /auth/register → Redirects to the main /register page
+ * This preserved route ensures old links and bookmarks still work.
+ */
+"use client";
 
-export default function RegisterPage() {
-  return (
-    <main className="p-6 max-w-md mx-auto">
-      <h1 className="text-2xl font-bold">Create Account</h1>
-      <p className="mt-2 text-sm text-gray-600">Join EventPro today.</p>
-    </main>
-  );
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+export default function AuthRegisterRedirect() {
+    const router = useRouter();
+
+    useEffect(() => {
+        router.replace("/register");
+    }, [router]);
+
+    return (
+        <div className="min-h-screen bg-[#020617] flex items-center justify-center">
+            <div className="text-slate-400 text-sm animate-pulse">Redirecting to registration...</div>
+        </div>
+    );
 }

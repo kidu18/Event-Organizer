@@ -10,8 +10,10 @@ import {
     Users,
     PlusCircle,
     Settings,
-    HelpCircle
+    HelpCircle,
+    LogOut
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
     { name: "Dashboard", icon: LayoutDashboard, href: "/admin" },
@@ -22,6 +24,7 @@ const navItems = [
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const { logout } = useAuth();
 
     return (
         <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0f172a] border-r border-white/5 flex flex-col z-50">
@@ -69,14 +72,29 @@ export default function Sidebar() {
                 </Link>
 
                 <div className="pt-4 border-t border-white/5 space-y-1">
-                    <Link href="/admin/settings" className="flex items-center gap-3 px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 transition-colors">
+                    <Link
+                        href="/admin/settings"
+                        className={`flex items-center gap-3 px-4 py-2 text-xs font-medium transition-colors ${pathname === "/admin/settings" ? "text-indigo-400" : "text-slate-500 hover:text-slate-300"
+                            }`}
+                    >
                         <Settings className="w-4 h-4" />
                         Settings
                     </Link>
-                    <Link href="/admin/help" className="flex items-center gap-3 px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 transition-colors">
+                    <Link
+                        href="/admin/help"
+                        className={`flex items-center gap-3 px-4 py-2 text-xs font-medium transition-colors ${pathname === "/admin/help" ? "text-indigo-400" : "text-slate-500 hover:text-slate-300"
+                            }`}
+                    >
                         <HelpCircle className="w-4 h-4" />
                         Help Center
                     </Link>
+                    <button
+                        onClick={() => logout()}
+                        className="w-full flex items-center gap-3 px-4 py-2 text-xs font-medium text-red-500/70 hover:text-red-400 hover:bg-red-500/5 rounded-lg transition-all"
+                    >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                    </button>
                 </div>
             </div>
         </aside>
