@@ -2,8 +2,6 @@
 
 import React from "react";
 import type { Event } from "../types";
-import Header from "../components/layout/Header";
-import Footer from "../components/layout/Footer";
 import Hero from "../components/home/Hero";
 import LiveStats from "../components/home/LiveStats";
 import EventList from "../components/home/EventList";
@@ -32,8 +30,6 @@ export default function Home() {
   }, []);
   return (
     <div className="min-h-screen flex flex-col bg-[#020617] text-white">
-      <Header />
-
       <main className="flex-1">
         <Hero />
         <LiveStats />
@@ -41,7 +37,7 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-6 py-12">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-96 rounded-3xl bg-slate-900/50 animate-pulse" />
+                <div key={i} className="h-[520px] rounded-[2.5rem] bg-slate-900/50 border border-white/5 animate-pulse overflow-hidden" />
               ))}
             </div>
           </div>
@@ -53,8 +49,6 @@ export default function Home() {
         <CallToAction />
         <TrustSection />
       </main>
-
-      <Footer />
     </div>
   );
 }

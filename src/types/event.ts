@@ -119,4 +119,4 @@ export interface EventTicketing {
     availableTickets: number;
 }
 
-export interface Venue = EventLocation & { id: string; capacity?: number };
+export type Venue = EventLocation & { id: string; capacity?: number };

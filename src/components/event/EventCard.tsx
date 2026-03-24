@@ -8,30 +8,30 @@ import type { Event } from "../../types";
 
 export default function EventCard({ event }: { event: Event }) {
     const [mounted, setMounted] = React.useState(false);
+    const [formattedDate, setFormattedDate] = React.useState("");
+    const [formattedTime, setFormattedTime] = React.useState("");
 
     React.useEffect(() => {
         setMounted(true);
-    }, []);
+        const date = new Date(event.eventDate || new Date());
+        setFormattedDate(date.toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric' 
+        }));
+        setFormattedTime(date.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        }));
+    }, [event.eventDate]);
 
-    if (!mounted) {
-        return <div className="h-[520px] rounded-[2.5rem] bg-slate-900/50 animate-pulse border border-white/5" />;
-    }
-
-    // Backend fields: eventDate (ISO string)
-    const eventDate = new Date(event.eventDate || new Date());
-    const formattedDate = eventDate.toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric' 
-    });
-    
-    const formattedTime = eventDate.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-    });
-
+    // Calculate seat status from backend counts
     const isSoldOut = event.availableSeatsCount === 0;
     const isAlmostSoldOut = event.availableSeatsCount > 0 && event.availableSeatsCount < 20;
+
+    if (!mounted) {
+        return <div className="h-[520px] rounded-[2.5rem] bg-slate-900/50 border border-white/5 animate-pulse overflow-hidden" />;
+    }
 
     return (
         <article className="group relative bg-[#0f172a]/60 rounded-[2.5rem] border border-white/5 hover:border-indigo-500/40 transition-all duration-700 overflow-hidden backdrop-blur-2xl flex flex-col h-full shadow-2xl">

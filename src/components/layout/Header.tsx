@@ -29,7 +29,7 @@ export default function Header() {
 
         <nav className="hidden md:flex items-center gap-8">
           <Link href="/events" className="text-sm font-medium text-slate-400 transition-colors hover:text-white">
-            Events
+            Event
           </Link>
           {isAuthenticated && user && (
             <>
@@ -145,7 +145,7 @@ export default function Header() {
       <div className={`md:hidden absolute top-full left-0 right-0 glass border-b border-white/5 transition-all duration-500 overflow-hidden ${isMenuOpen ? "max-h-[85vh] opacity-100" : "max-h-0 opacity-0 pointer-events-none"}`}>
         <nav className="flex flex-col p-6 gap-2 overflow-y-auto">
           <Link href="/events" onClick={() => setIsMenuOpen(false)} className="text-lg font-semibold text-slate-400 hover:text-white py-3 px-4 rounded-xl hover:bg-white/5 transition-colors">
-            Events
+            Event
           </Link>
           {isAuthenticated && user && (
             <>

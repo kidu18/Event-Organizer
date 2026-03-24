@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import EventCard from "../../components/event/EventCard";
 import type { Event } from "../../types";
