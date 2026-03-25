@@ -1,14 +1,14 @@
 "use client";
 
 import React from "react";
-import type { Event } from "../types";
-import Hero from "../components/home/Hero";
-import LiveStats from "../components/home/LiveStats";
-import EventList from "../components/home/EventList";
-import Categories from "../components/home/Categories";
-import CallToAction from "../components/home/CallToAction";
-import TrustSection from "../components/home/TrustSection";
-import { eventsService } from "../features/events/events.service";
+import type { Event } from "@/types";
+import Hero from "@/components/home/Hero";
+import LiveStats from "@/components/home/LiveStats";
+import EventList from "@/components/home/EventList";
+import Categories from "@/components/home/Categories";
+import CallToAction from "@/components/home/CallToAction";
+import TrustSection from "@/components/home/TrustSection";
+import { eventsService } from "@/features/events/events.service";
 
 
 export default function Home() {

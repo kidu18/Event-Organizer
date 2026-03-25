@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import EventList from "../../features/events/EventList";
-import type { Event } from "../../types";
-import { eventsService } from "../../features/events/events.service";
+import EventList from "@/features/events/EventList";
+import type { Event } from "@/types";
+import { eventsService } from "@/features/events/events.service";
 import { Search, Sparkles, Filter } from "lucide-react";
 
 export default function EventsPage() {
