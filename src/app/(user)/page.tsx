@@ -14,6 +14,13 @@ import { eventsService } from "@/features/events/events.service";
 export default function Home() {
   const [events, setEvents] = React.useState<Event[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [searchQuery, setSearchQuery] = React.useState("");
+
+  const filteredEvents = events.filter(event => 
+    event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    event.venueName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
 
   React.useEffect(() => {
     const fetchEvents = async () => {
@@ -31,7 +38,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-[#020617] text-white">
       <main className="flex-1">
-        <Hero />
+        <Hero searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
         <LiveStats />
         {loading ? (
           <div className="max-w-7xl mx-auto px-6 py-12">
@@ -41,8 +48,19 @@ export default function Home() {
               ))}
             </div>
           </div>
+        ) : filteredEvents.length > 0 ? (
+          <EventList events={filteredEvents} />
         ) : (
-          <EventList events={events} />
+          <div className="max-w-7xl mx-auto px-6 py-12 text-center bg-white/5 border border-white/5 rounded-[2.5rem] mb-20 mx-6">
+            <h3 className="text-2xl font-bold text-white mb-2">No matching events</h3>
+            <p className="text-slate-400">Try searching for something else!</p>
+            <button 
+              onClick={() => setSearchQuery("")}
+              className="mt-4 text-indigo-400 underline"
+            >
+              Clear search
+            </button>
+          </div>
         )}
         <Categories />
 

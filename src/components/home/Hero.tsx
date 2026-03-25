@@ -3,7 +3,13 @@
 import React from "react";
 import DateSelect from "../ui/DateSelect";
 
-export default function Hero() {
+interface HeroProps {
+    searchQuery: string;
+    setSearchQuery: (val: string) => void;
+}
+
+export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
+
     const [mounted, setMounted] = React.useState(false);
 
     React.useEffect(() => {
@@ -38,7 +44,9 @@ export default function Hero() {
                                     suppressHydrationWarning
                                     aria-label="Search events"
                                     placeholder="Concerts, tech, or festivals..."
-                                    className="flex-1 py-3.5 md:py-4 bg-transparent text-black placeholder:text-slate-500 border-none focus:ring-0 text-sm md:text-base w-full"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="flex-1 py-3.5 md:py-4 bg-transparent text-white placeholder:text-slate-500 border-none focus:ring-0 text-sm md:text-base w-full"
                                 />
                             </div>
                             <div className="hidden sm:block w-px h-8 bg-white/10" />

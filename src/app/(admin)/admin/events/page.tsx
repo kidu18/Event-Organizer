@@ -3,9 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Plus, Calendar, MapPin, Users, Ticket, Edit2, Trash2, Eye, Search, Filter, MoreVertical, Clock, DollarSign, AlertCircle, X } from "lucide-react";
-import { Event, CreateEventRequest, UpdateEventRequest } from "@/types/event";
-import { getAllEvents, createEvent, updateEvent, deleteEvent, searchEvents } from "@/services/eventServices";
+import { Plus, Calendar, MapPin, Users, Ticket, Edit2, Trash2, Eye, Search, Filter, AlertCircle, X, DollarSign } from "lucide-react";
+import { Event } from "@/types/event";
+import { getAllEvents, deleteEvent } from "@/services/eventServices";
 import CreateEventForm from "@/features/events/components/CreateEventForm";
 
 export default function EventsManagementPage() {
@@ -13,9 +13,16 @@ export default function EventsManagementPage() {
     const [events, setEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+
+    const filteredEvents = events.filter(event => 
+        event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.venueName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
 
     useEffect(() => {
         fetchEvents();
@@ -37,16 +44,7 @@ export default function EventsManagementPage() {
     };
 
     const handleSearch = async () => {
-        if (searchTerm.trim()) {
-            try {
-                const searchResults = await searchEvents(searchTerm);
-                setEvents(searchResults);
-            } catch (error) {
-                console.error('❌ Search failed:', error);
-            }
-        } else {
-            fetchEvents();
-        }
+        // Now handled by live client-side filtering via searchQuery
     };
 
     const closeModal = () => {
@@ -163,9 +161,8 @@ export default function EventsManagementPage() {
                         <input
                             type="text"
                             placeholder="Search events..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                             className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
                         />
                     </div>
@@ -187,17 +184,28 @@ export default function EventsManagementPage() {
 
             {/* Events List */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-                {events.length === 0 ? (
+                {filteredEvents.length === 0 ? (
                     <div className="bg-white rounded-lg shadow p-8 text-center">
                         <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                         <h3 className="text-lg font-medium text-gray-900 mb-2">No Events Found</h3>
-                        <p className="text-gray-500 mb-4">Get started by creating your first event.</p>
-                        <button
-                            onClick={() => setShowCreateModal(true)}
-                            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                        >
-                            Create Event
-                        </button>
+                        <p className="text-gray-500 mb-4">
+                            {searchQuery ? `We couldn't find any events matching "${searchQuery}"` : "Get started by creating your first event."}
+                        </p>
+                        {searchQuery ? (
+                            <button
+                                onClick={() => setSearchQuery("")}
+                                className="px-4 py-2 text-purple-600 font-bold hover:text-purple-700 transition-colors"
+                            >
+                                Clear search
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => setShowCreateModal(true)}
+                                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all"
+                            >
+                                Create Event
+                            </button>
+                        )}
                     </div>
                 ) : (
                     <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -214,7 +222,7 @@ export default function EventsManagementPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {events.map((event) => (
+                                    {filteredEvents.map((event) => (
                                         <tr key={event.id} className="hover:bg-gray-50">
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center">
