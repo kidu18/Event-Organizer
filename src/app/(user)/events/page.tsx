@@ -9,6 +9,17 @@ import { Search, Sparkles, Filter } from "lucide-react";
 export default function EventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState(""); // Step 1: Add state for search
+
+  // Step 3: Create the Filter Logic
+  const filteredEvents = events.filter((event) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      event.title.toLowerCase().includes(query) ||
+      (event.description && event.description.toLowerCase().includes(query)) ||
+      (event.venueName && event.venueName.toLowerCase().includes(query))
+    );
+  });
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -59,12 +70,12 @@ export default function EventsPage() {
               <Sparkles size={14} className="text-indigo-500" />
               Direct from backend
             </div>
-            
+
             <h1 className="text-5xl md:text-7xl font-black text-white mb-8 tracking-tighter leading-none">
               Explore <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">Upcoming Events</span>
             </h1>
-            
+
             <p className="text-slate-400 text-lg md:text-xl leading-relaxed max-w-2xl font-medium">
               Join thousands of people discovering incredible moments. Explore premium experiences, workshops, and concerts curated just for you.
             </p>
@@ -75,13 +86,15 @@ export default function EventsPage() {
             <div className="group relative flex-1 min-w-[300px]">
               <div className="absolute inset-0 bg-indigo-500/10 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity" />
               <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5 group-focus-within:text-indigo-400 transition-colors" />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="Find an event..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="relative bg-slate-900/40 backdrop-blur-xl border border-white/5 text-white pl-14 pr-6 py-5 rounded-[1.5rem] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 w-full font-bold shadow-2xl transition-all"
               />
             </div>
-            
+
             <button className="px-8 py-5 bg-white text-black font-black rounded-[1.5rem] flex items-center justify-center gap-2 hover:bg-slate-200 active:scale-95 transition-all shadow-xl shadow-white/5">
               Filters <Filter size={18} />
             </button>
@@ -90,23 +103,36 @@ export default function EventsPage() {
 
         {/* Categories Bar - Subtle Touch */}
         <div className="flex items-center gap-4 overflow-x-auto pb-8 mb-12 scrollbar-none">
-           {['All Events', 'Technology', 'Music', 'Business', 'Workshops', 'Social'].map((cat, i) => (
-             <button 
-                key={i} 
-                className={`px-6 py-3 rounded-2xl text-sm font-bold whitespace-nowrap transition-all border ${
-                    i === 0 
-                    ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-600/20' 
-                    : 'bg-white/5 border-white/5 text-slate-400 hover:text-white hover:bg-white/10'
+          {['All Events', 'Technology', 'Music', 'Business', 'Workshops', 'Social'].map((cat, i) => (
+            <button
+              key={i}
+              className={`px-6 py-3 rounded-2xl text-sm font-bold whitespace-nowrap transition-all border ${i === 0
+                  ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-600/20'
+                  : 'bg-white/5 border-white/5 text-slate-400 hover:text-white hover:bg-white/10'
                 }`}
-             >
-                {cat}
-             </button>
-           ))}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
 
         {/* The List / Grid Component */}
         <div className="relative group/list">
-          <EventList events={events} />
+          {filteredEvents.length > 0 ? (
+            <EventList events={filteredEvents} />
+          ) : (
+            <div className="text-center py-24 bg-white/5 border border-white/5 rounded-[2.5rem] backdrop-blur-xl">
+              <Search size={48} className="mx-auto text-slate-700 mb-6" />
+              <h3 className="text-2xl font-bold text-white mb-2">No matching events</h3>
+              <p className="text-slate-400 font-medium">Try adjusting your search query or filters.</p>
+              <button 
+                onClick={() => setSearchQuery("")}
+                className="mt-6 text-indigo-400 hover:text-indigo-300 font-bold underline underline-offset-4"
+              >
+                Clear search
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </main>
