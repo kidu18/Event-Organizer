@@ -107,8 +107,8 @@ export default function EventsPage() {
             <button
               key={i}
               className={`px-6 py-3 rounded-2xl text-sm font-bold whitespace-nowrap transition-all border ${i === 0
-                  ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-600/20'
-                  : 'bg-white/5 border-white/5 text-slate-400 hover:text-white hover:bg-white/10'
+                ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-600/20'
+                : 'bg-white/5 border-white/5 text-slate-400 hover:text-white hover:bg-white/10'
                 }`}
             >
               {cat}
@@ -125,7 +125,7 @@ export default function EventsPage() {
               <Search size={48} className="mx-auto text-slate-700 mb-6" />
               <h3 className="text-2xl font-bold text-white mb-2">No matching events</h3>
               <p className="text-slate-400 font-medium">Try adjusting your search query or filters.</p>
-              <button 
+              <button
                 onClick={() => setSearchQuery("")}
                 className="mt-6 text-indigo-400 hover:text-indigo-300 font-bold underline underline-offset-4"
               >
