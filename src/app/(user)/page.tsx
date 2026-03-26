@@ -9,12 +9,13 @@ import Categories from "@/components/home/Categories";
 import CallToAction from "@/components/home/CallToAction";
 import TrustSection from "@/components/home/TrustSection";
 import { eventsService } from "@/features/events/events.service";
+import { useSearchQuery } from "@/components/providers/SearchProvider";
 
 
 export default function Home() {
   const [events, setEvents] = React.useState<Event[]>([]);
   const [loading, setLoading] = React.useState(true);
-  const [searchQuery, setSearchQuery] = React.useState("");
+  const { searchQuery, setSearchQuery } = useSearchQuery();
 
   const filteredEvents = events.filter(event => 
     event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||

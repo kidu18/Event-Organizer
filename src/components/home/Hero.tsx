@@ -2,6 +2,7 @@
 
 import React from "react";
 import DateSelect from "../ui/DateSelect";
+import { useRouter } from "next/navigation";
 
 interface HeroProps {
     searchQuery: string;
@@ -9,8 +10,12 @@ interface HeroProps {
 }
 
 export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
-
+    const router = useRouter();
     const [mounted, setMounted] = React.useState(false);
+
+    const handleSearch = () => {
+        router.push("/events");
+    };
 
     React.useEffect(() => {
         setMounted(true);
@@ -46,6 +51,7 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
                                     placeholder="Concerts, tech, or festivals..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
+                                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                                     className="flex-1 py-3.5 md:py-4 bg-transparent text-white placeholder:text-slate-500 border-none focus:ring-0 text-sm md:text-base w-full"
                                 />
                             </div>
@@ -53,7 +59,10 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
                             <div className="w-full sm:w-auto px-0 md:px-2">
                                 <DateSelect className="w-full" />
                             </div>
-                            <button className="w-full sm:w-auto px-6 md:px-8 py-4 rounded-xl sm:rounded-2xl font-bold bg-gradient-to-r from-[#7c3aed] to-[#06b6d4] text-white hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-purple-500/25 text-sm md:text-base">
+                            <button 
+                                onClick={handleSearch}
+                                className="w-full sm:w-auto px-6 md:px-8 py-4 rounded-xl sm:rounded-2xl font-bold bg-gradient-to-r from-[#7c3aed] to-[#06b6d4] text-white hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-purple-500/25 text-sm md:text-base"
+                            >
                                 Search Events
                             </button>
                         </div>

@@ -5,11 +5,12 @@ import EventList from "@/features/events/EventList";
 import type { Event } from "@/types";
 import { eventsService } from "@/features/events/events.service";
 import { Search, Sparkles, Filter } from "lucide-react";
+import { useSearchQuery } from "@/components/providers/SearchProvider";
 
 export default function EventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState(""); // Step 1: Add state for search
+  const { searchQuery, setSearchQuery } = useSearchQuery();
 
   // Step 3: Create the Filter Logic
   const filteredEvents = events.filter((event) => {
