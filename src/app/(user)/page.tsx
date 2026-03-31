@@ -2,7 +2,6 @@
 
 import React from "react";
 import type { Event } from "@/types";
-import Hero from "@/components/home/Hero";
 import LiveStats from "@/components/home/LiveStats";
 import EventList from "@/components/home/EventList";
 import Categories from "@/components/home/Categories";
@@ -37,9 +36,16 @@ export default function Home() {
     fetchEvents();
   }, []);
   return (
-    <div className="min-h-screen flex flex-col bg-[#020617] text-white">
+    <div className="min-h-screen flex flex-col bg-[#020617] text-white pt-24">
       <main className="flex-1">
-        <Hero searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <div className="max-w-7xl mx-auto px-6 mb-12">
+            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-4">
+                Featured <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Events</span>
+            </h1>
+            <p className="text-slate-400 max-w-2xl font-medium">
+                Discover the most exclusive moments happening right now in Metropolis City.
+            </p>
+        </div>
         <LiveStats />
         {loading ? (
           <div className="max-w-7xl mx-auto px-6 py-12">
