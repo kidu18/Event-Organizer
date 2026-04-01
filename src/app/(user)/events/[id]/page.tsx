@@ -17,10 +17,12 @@ import {
   FileText,
   ArrowRight,
   TrendingUp,
-  Zap
+  Zap,
+  Armchair
 } from "lucide-react";
 import type { Event } from "@/types";
 import { eventsService } from "@/features/events/events.service";
+import BookingModal from "@/components/event/BookingModal";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -32,12 +34,21 @@ export default function EventDetailsPage({ params }: PageProps) {
   const [loading, setLoading] = useState(true);
   const [realTimeUpdates, setRealTimeUpdates] = useState(true);
 
+  // 🔵 STEP 1: Add state to control the booking modal visibility.
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
+  // 🔵 STEP 2: Use a typed array for selected seats to avoid 'any' errors.
+  const [selectedSeats, setSelectedSeats] = useState<{ id: string; row: string; number: string; section: string; price: number }[]>([]);
+
   useEffect(() => {
     const fetchEvent = async () => {
       try {
         setLoading(true);
         const data = await eventsService.getById(id);
         setEvent(data);
+        
+        // 🔵 STEP 3: Instead of auto-selecting, we'll let users select their own seats!
+        setSelectedSeats([]);
       } catch (error) {
         console.error("Error fetching event:", error);
       } finally {
@@ -306,7 +317,83 @@ export default function EventDetailsPage({ params }: PageProps) {
                 </div>
 
                 <div className="space-y-6">
-                    <button className="w-full py-6 bg-indigo-600 text-white font-black rounded-2xl flex items-center justify-center gap-3 hover:bg-indigo-500 hover:shadow-[0_0_30px_rgba(79,70,229,0.4)] transition-all active:scale-95 group">
+                    {/* 🔵 STEP 3.1: Visual Seat Grid Selector. */}
+                    <div className="p-8 rounded-[2rem] bg-black/20 border border-white/5 space-y-6">
+                        <div className="flex items-center justify-between font-black text-[10px] uppercase tracking-widest">
+                            <span className="text-slate-500">Pick your spots</span>
+                            <div className="flex gap-4">
+                                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-slate-700" /> <span className="text-slate-600">Reserved</span></div>
+                                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-indigo-500" /> <span className="text-indigo-400">Available</span></div>
+                            </div>
+                        </div>
+
+                        {/* Seat Grid */}
+                        <div className="flex flex-col gap-3">
+                          {[...Array(event.totalRows || 5)].map((_, rowIndex) => (
+                            <div key={rowIndex} className="flex gap-2 justify-center">
+                              {[...Array(event.totalColumns || 6)].map((_, colIndex) => {
+                                const rowLabel = String.fromCharCode(65 + rowIndex); // A, B, C...
+                                const seatNumber = colIndex + 1;
+                                const isSelected = selectedSeats.some(s => s.row === rowLabel && s.number === String(seatNumber));
+                                
+                                // Find seat in event data to check status/price
+                                const seatData = event.seats?.find(s => s.rowNumber === rowIndex + 1 && s.columnNumber === colIndex + 1);
+                                const isSold = seatData?.status === 'SOLD' || (!seatData && rowIndex === 0); // Mock some sold seats
+                                const price = seatData?.price || 49.00;
+
+                                return (
+                                  <button
+                                    key={colIndex}
+                                    disabled={isSold}
+                                    onClick={() => {
+                                      if (isSelected) {
+                                        setSelectedSeats(prev => prev.filter(s => !(s.row === rowLabel && s.number === String(seatNumber))));
+                                      } else {
+                                        setSelectedSeats(prev => [...prev, { id: `${rowLabel}${seatNumber}`, row: rowLabel, number: String(seatNumber), section: 'Premium Seating', price }]);
+                                      }
+                                    }}
+                                    className={`
+                                      w-7 h-8 rounded-lg flex items-center justify-center transition-all duration-300 transform hover:scale-110 active:scale-95
+                                      ${isSold ? 'bg-slate-800 text-slate-700 cursor-not-allowed opacity-30' : 
+                                        isSelected ? 'bg-indigo-500 text-white shadow-[0_0_15px_rgba(79,70,229,0.5)] ring-2 ring-white/20' : 
+                                        'bg-white/5 border border-white/10 text-slate-400 hover:border-indigo-500/50 hover:bg-white/10'}
+                                    `}
+                                  >
+                                    <Armchair size={14} className={isSelected ? 'fill-current' : ''} />
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          ))}
+                        </div>
+                        
+                        {/* Selected Count Display */}
+                        {selectedSeats.length > 0 && (
+                          <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-between text-[10px] font-bold">
+                             <div className="text-white flex items-center gap-2 uppercase tracking-widest">
+                                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                                {selectedSeats.length} Seats Selected
+                             </div>
+                             <button 
+                              onClick={() => setSelectedSeats([])}
+                              className="text-slate-500 hover:text-indigo-400 uppercase tracking-widest"
+                             >
+                                Clear
+                             </button>
+                          </div>
+                        )}
+                    </div>
+
+                    <button 
+                      onClick={() => {
+                        if (selectedSeats.length === 0) {
+                          alert("Please select at least one seat!");
+                          return;
+                        }
+                        setIsBookingModalOpen(true);
+                      }}
+                      className="w-full py-6 bg-indigo-600 text-white font-black rounded-2xl flex items-center justify-center gap-3 hover:bg-indigo-500 hover:shadow-[0_0_30px_rgba(79,70,229,0.4)] transition-all active:scale-95 group"
+                    >
                       SELECT SEATS
                       <ArrowRight size={20} className="group-hover:translate-x-1.5 transition-transform" />
                     </button>
@@ -348,6 +435,18 @@ export default function EventDetailsPage({ params }: PageProps) {
           </div>
           {/* We could add more cards here */}
       </div>
+
+      {/* 🔵 STEP 4: Render the BookingModal component with Date and Time. */}
+      {event && (
+        <BookingModal 
+          isOpen={isBookingModalOpen}
+          onClose={() => setIsBookingModalOpen(false)}
+          eventTitle={event.title}
+          eventDate={formattedDate}
+          eventTime={formattedTime}
+          selectedSeats={selectedSeats}
+        />
+      )}
     </main>
   );
 }
