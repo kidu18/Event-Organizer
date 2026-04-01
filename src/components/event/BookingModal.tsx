@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { X, Armchair, ShieldCheck, Timer, ArrowRight, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { bookSeats } from "@/services/bookingServices";
 
 interface SelectedSeat {
   id: string;
@@ -15,6 +16,7 @@ interface SelectedSeat {
 interface BookingModalProps {
   isOpen: boolean;
   onClose: () => void;
+  eventId: string;
   eventTitle: string;
   eventDate: string;
   eventTime: string;
@@ -25,7 +27,7 @@ interface BookingModalProps {
  * 🔵 STEP 1: Define the BookingModal component for confirming ticket purchase.
  * Enhanced to show event date and time.
  */
-export default function BookingModal({ isOpen, onClose, eventTitle, eventDate, eventTime, selectedSeats }: BookingModalProps) {
+export default function BookingModal({ isOpen, onClose, eventId, eventTitle, eventDate, eventTime, selectedSeats }: BookingModalProps) {
   const router = useRouter();
   const [isBooking, setIsBooking] = useState(false);
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
@@ -53,24 +55,36 @@ export default function BookingModal({ isOpen, onClose, eventTitle, eventDate, e
 
   // 🔵 STEP 9: Handle the "Proceed to Payment" flow.
   const handleProceedToPayment = async () => {
+    if (selectedSeats.length === 0) return;
+    
     setIsBooking(true);
-    
-    // Logic for zero configuration -> done:
-    // 1. Create a PaymentIntent via backend (Mocked here for now)
-    // 2. Redirect to Success OR mount Stripe Payment Element
-    
-    setTimeout(() => {
-      setIsBooking(false);
+    try {
+      // 🔵 REAL API CALL: Call the backend booking endpoint
+      const booking = await bookSeats({
+        eventId,
+        seatIds: selectedSeats.map(s => s.id)
+      });
+
+      console.log('✅ Booking result:', booking);
+
       // Constructing query params with event data for the success page
       const params = new URLSearchParams({
+        id: booking.id, // Real booking ID
         event: eventTitle,
         date: eventDate,
         time: eventTime,
         count: selectedSeats.length.toString(),
+        total: booking.totalAmount.toString()
       });
+      
       router.push(`/checkout-success?${params.toString()}`);
       onClose();
-    }, 2000); 
+    } catch (error: any) {
+      console.error('❌ Booking failed:', error);
+      alert(error.message || "Something went wrong during booking. Please try again.");
+    } finally {
+      setIsBooking(false);
+    }
   };
 
   if (!isOpen) return null;

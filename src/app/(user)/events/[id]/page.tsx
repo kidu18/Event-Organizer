@@ -347,9 +347,15 @@ export default function EventDetailsPage({ params }: PageProps) {
                                     disabled={isSold}
                                     onClick={() => {
                                       if (isSelected) {
-                                        setSelectedSeats(prev => prev.filter(s => !(s.row === rowLabel && s.number === String(seatNumber))));
-                                      } else {
-                                        setSelectedSeats(prev => [...prev, { id: `${rowLabel}${seatNumber}`, row: rowLabel, number: String(seatNumber), section: 'Premium Seating', price }]);
+                                        setSelectedSeats(prev => prev.filter(s => s.id !== seatData?.id));
+                                      } else if (seatData) {
+                                        setSelectedSeats(prev => [...prev, { 
+                                          id: seatData.id, 
+                                          row: rowLabel, 
+                                          number: String(seatNumber), 
+                                          section: 'General Admission', 
+                                          price 
+                                        }]);
                                       }
                                     }}
                                     className={`
@@ -441,6 +447,7 @@ export default function EventDetailsPage({ params }: PageProps) {
         <BookingModal 
           isOpen={isBookingModalOpen}
           onClose={() => setIsBookingModalOpen(false)}
+          eventId={event.id}
           eventTitle={event.title}
           eventDate={formattedDate}
           eventTime={formattedTime}

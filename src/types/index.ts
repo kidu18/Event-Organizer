@@ -1,3 +1,4 @@
 export * from "./user";
-export * from "./event";
-export * from "./ticket";
+export { type Seat, type Event, type SeatStatus, type EventStatus, type EventStats } from "./event";
+export { type Order } from "./ticket";
+export * from "./booking";
